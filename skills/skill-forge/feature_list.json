@@ -1,0 +1,270 @@
+[
+  {
+    "id": 1,
+    "category": "functional",
+    "description": "SKILL.md exists with valid YAML frontmatter (name, description)",
+    "steps": [
+      "Read SKILL.md",
+      "Confirm starts with --- frontmatter block",
+      "Confirm name: skill-forge",
+      "Confirm description is one paragraph"
+    ],
+    "passes": true
+  },
+  {
+    "id": 2,
+    "category": "functional",
+    "description": "SKILL.md description names all three modes (forge, audit, refine) and the alpha-skills publish step",
+    "steps": [
+      "Read frontmatter description",
+      "Find words: forge, audit, refine, alpha-skills"
+    ],
+    "passes": true
+  },
+  {
+    "id": 3,
+    "category": "functional",
+    "description": "SKILL.md has explicit trigger phrases for each mode",
+    "steps": [
+      "Find 'skill-forge a' or similar forge trigger",
+      "Find 'audit' trigger",
+      "Find 'refine' trigger"
+    ],
+    "passes": true
+  },
+  {
+    "id": 4,
+    "category": "functional",
+    "description": "templates/SKILL.md.tmpl exists with placeholder {{name}} and {{description}}",
+    "steps": [
+      "Read template",
+      "Confirm placeholders present"
+    ],
+    "passes": true
+  },
+  {
+    "id": 5,
+    "category": "functional",
+    "description": "scripts/mine_chats.py runs without arguments and exits 0",
+    "steps": [
+      "python scripts/mine_chats.py",
+      "Expect exit 0"
+    ],
+    "passes": true
+  },
+  {
+    "id": 6,
+    "category": "functional",
+    "description": "scripts/mine_chats.py writes reports/latest.md",
+    "steps": [
+      "Run miner",
+      "Stat reports/latest.md",
+      "Confirm size > 0"
+    ],
+    "passes": true
+  },
+  {
+    "id": 7,
+    "category": "functional",
+    "description": "scripts/mine_chats.py writes reports/latest.json with candidates array",
+    "steps": [
+      "Run miner",
+      "Parse reports/latest.json",
+      "Confirm 'new_skill_candidates' key present"
+    ],
+    "passes": true
+  },
+  {
+    "id": 8,
+    "category": "functional",
+    "description": "mine_chats.py skips SSH-session transcripts",
+    "steps": [
+      "Run miner with --verbose",
+      "Confirm cwd /home/ or ssh- prefix entries skipped"
+    ],
+    "passes": true
+  },
+  {
+    "id": 9,
+    "category": "functional",
+    "description": "mine_chats.py skips skill-forge's own sessions (no recursion)",
+    "steps": [
+      "Look for self-mention filter",
+      "Confirm filter present"
+    ],
+    "passes": true
+  },
+  {
+    "id": 10,
+    "category": "functional",
+    "description": "mine_chats.py supports --days N argument",
+    "steps": [
+      "python scripts/mine_chats.py --days 7",
+      "Expect filter applied"
+    ],
+    "passes": true
+  },
+  {
+    "id": 11,
+    "category": "functional",
+    "description": "scripts/forge_new.py creates ~/.claude/skills/<name>/SKILL.md from brief",
+    "steps": [
+      "python scripts/forge_new.py --name test-throwaway --brief 'does X'",
+      "Stat ~/.claude/skills/test-throwaway/SKILL.md",
+      "Cleanup"
+    ],
+    "passes": true
+  },
+  {
+    "id": 12,
+    "category": "functional",
+    "description": "forge_new.py refuses to overwrite existing skill without --force",
+    "steps": [
+      "Run twice with same name",
+      "Expect second run errors"
+    ],
+    "passes": true
+  },
+  {
+    "id": 13,
+    "category": "functional",
+    "description": "scripts/publish.py --dry-run produces a diff in proposals/<name>/",
+    "steps": [
+      "python scripts/publish.py orchestrate --dry-run",
+      "Stat proposals/orchestrate/CHANGES.diff"
+    ],
+    "passes": true
+  },
+  {
+    "id": 14,
+    "category": "functional",
+    "description": "publish.py clones alpha-skills lazily into ~/.cache/skill-forge/alpha-skills if missing",
+    "steps": [
+      "Remove cache if present",
+      "Run publish dry-run",
+      "Stat cache dir"
+    ],
+    "passes": true
+  },
+  {
+    "id": 15,
+    "category": "functional",
+    "description": "publish.py never adds --merge to gh pr create call",
+    "steps": [
+      "grep -n 'merge' scripts/publish.py",
+      "Confirm no auto-merge"
+    ],
+    "passes": true
+  },
+  {
+    "id": 16,
+    "category": "functional",
+    "description": "publish.py creates branch named skill-forge/<name>-<timestamp>",
+    "steps": [
+      "Read publish.py",
+      "Confirm branch naming pattern"
+    ],
+    "passes": true
+  },
+  {
+    "id": 17,
+    "category": "functional",
+    "description": "publish.py writes a PR body that includes mined evidence when --from-audit is passed",
+    "steps": [
+      "grep for from-audit flag",
+      "Confirm reads reports/latest.json"
+    ],
+    "passes": true
+  },
+  {
+    "id": 18,
+    "category": "functional",
+    "description": "Refinement mode produces additive-only diffs (no removed lines beyond whitespace)",
+    "steps": [
+      "Read refine logic",
+      "Confirm guard rejects deletions"
+    ],
+    "passes": true
+  },
+  {
+    "id": 19,
+    "category": "functional",
+    "description": "All scripts run under Python stdlib only (no pip install required)",
+    "steps": [
+      "grep ^import scripts/*.py",
+      "Confirm no third-party imports"
+    ],
+    "passes": true
+  },
+  {
+    "id": 20,
+    "category": "style",
+    "description": "No em dashes in any project markdown or python comments",
+    "steps": [
+      "grep -r '\u2014' --include='*.md' --include='*.py' .",
+      "Wait \u2014 en dash is allowed; specifically check for U+2014"
+    ],
+    "passes": true
+  },
+  {
+    "id": 21,
+    "category": "style",
+    "description": "SKILL.md follows mph-voice-refresh structure (When to invoke / Flow / Hard rules)",
+    "steps": [
+      "Read SKILL.md",
+      "Confirm sections present"
+    ],
+    "passes": true
+  },
+  {
+    "id": 22,
+    "category": "style",
+    "description": "Python files have one-line module docstrings, no multi-paragraph",
+    "steps": [
+      "Read top of each .py",
+      "Confirm single-line docstring"
+    ],
+    "passes": true
+  },
+  {
+    "id": 23,
+    "category": "style",
+    "description": "No emojis in any file",
+    "steps": [
+      "Scan for emoji codepoints",
+      "Confirm none"
+    ],
+    "passes": true
+  },
+  {
+    "id": 24,
+    "category": "functional",
+    "description": "Integration: miner on real ~/.claude/projects produces at least one candidate OR cleanly reports 'no candidates'",
+    "steps": [
+      "Real run",
+      "Read latest.md",
+      "Confirm sensible output"
+    ],
+    "passes": true
+  },
+  {
+    "id": 25,
+    "category": "functional",
+    "description": "End-to-end dry-run: forge test skill \u2192 publish dry-run \u2192 confirm diff has new skills/<name>/SKILL.md file",
+    "steps": [
+      "Chain forge_new + publish --dry-run",
+      "Confirm diff content"
+    ],
+    "passes": true
+  },
+  {
+    "id": 26,
+    "category": "functional",
+    "description": "SKILL.md tells the user how to schedule the audit via /schedule",
+    "steps": [
+      "grep 'schedule' SKILL.md",
+      "Confirm guidance present"
+    ],
+    "passes": true
+  }
+]

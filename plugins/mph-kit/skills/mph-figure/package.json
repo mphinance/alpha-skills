@@ -1,0 +1,12 @@
+{
+  "name": "mph-figure",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Render markdown/HTML into accurate, themed images via a real browser.",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "playwright": "^1.49.0"
+  }
+}

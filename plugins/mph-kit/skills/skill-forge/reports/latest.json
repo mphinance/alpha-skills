@@ -1,0 +1,322 @@
+{
+  "generated_at": "2026-06-15T14:00:10+00:00",
+  "days_window": 7,
+  "new_skill_candidates": [
+    {
+      "phrase": "file this is an automated",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "file-automated",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "automated run of scheduled task",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "automated-run-scheduled-task",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "answer questions for implementation details",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "answer-questions-implementation-details",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "questions for implementation details execute",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "questions-implementation-details-execute",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "implementation details execute autonomously without",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "implementation-details-execute-autonomously",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "details execute autonomously without asking",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "details-execute-autonomously-without",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "execute autonomously without asking clarifying",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "execute-autonomously-without-asking",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "autonomously without asking clarifying questions",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "autonomously-without-asking-clarifying",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "without asking clarifying questions make",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "without-asking-clarifying-questions",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "asking clarifying questions make reasonable",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "asking-clarifying-questions-make",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "clarifying questions make reasonable choices",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "clarifying-questions-make-reasonable",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "make reasonable choices and note",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "make-reasonable-choices-note",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "note them in your output",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "note-output",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "output write actions mcp tools",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "output-write-actions-mcp",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "actions mcp tools that send",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "actions-mcp-tools-send",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "mcp tools that send post",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "mcp-tools-send-post",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "tools that send post create",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "tools-send-post-create",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "post create update or delete",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "post-create-update-delete",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "create update or delete only",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "create-update-delete-only",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "update or delete only take",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "update-delete-only-take",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "take them if the task",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "take-task",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "file asks for that specific",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "file-asks-specific",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "asks for that specific action",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "asks-specific-action",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "specific action when in doubt",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "specific-action-doubt",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    },
+    {
+      "phrase": "action when in doubt producing",
+      "session_count": 6,
+      "total_occurrences": 6,
+      "example_messages": [
+        "<scheduled-task name=\"substack-cadence-nudge\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\substack-cadence-nudge\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation detai...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex...",
+        "<scheduled-task name=\"daily-morning-brief\" file=\"C:\\Users\\mphan\\.claude\\scheduled-tasks\\daily-morning-brief\\SKILL.md\"> This is an automated run of a scheduled task. The user is not present to answer questions. For implementation details, ex..."
+      ],
+      "suggested_name": "action-doubt-producing",
+      "rationale": "Phrase recurs across 6 distinct sessions (6 total mentions) within the 7-day window."
+    }
+  ],
+  "pain_points": [
+    {
+      "marker": "I hate",
+      "message": "And change it. The tags on the side... ok first TraderDaddy's Actions we have setup to automatically fix stuff is what I need in this repo I hate having to merge the ones being created overnight. And with that, the right column I want to use tags for repos and be able to write notes then have the issues automatically c...",
+      "session_id": "9d39a0e3-6baa-4fdc-9954-666b7d543626",
+      "timestamp": "2026-06-13T02:33:51.656Z"
+    }
+  ],
+  "refinement_candidates": [],
+  "stats": {
+    "total_rows": 19831,
+    "total_user_messages": 176,
+    "sessions_seen": 28,
+    "recursion_skipped": 0,
+    "skills_scanned": 21
+  }
+}

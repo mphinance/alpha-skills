@@ -1,0 +1,18 @@
+{
+  "name": "mphinance",
+  "owner": {
+    "name": "Michael Hanko",
+    "url": "https://github.com/mphinance"
+  },
+  "metadata": {
+    "description": "Michael Hanko's Claude Code marketplace. Source of truth for his portable skill/command/agent kit so every machine runs the same setup.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mph-kit",
+      "source": "./plugins/mph-kit",
+      "description": "Michael's curated, portable Claude Code kit: 28 skills (Substack pipeline, trading research, design, meta-tools) plus 6 slash commands and 3 subagents. Install this on every machine to stay in sync."
+    }
+  ]
+}

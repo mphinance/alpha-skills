@@ -1,0 +1,11 @@
+{
+  "name": "mph-kit",
+  "version": "0.1.0",
+  "description": "Michael Hanko's portable Claude Code kit: curated skills, slash commands, and subagents kept in one place so every machine (and the mph server) runs the same setup.",
+  "author": {
+    "name": "Michael Hanko",
+    "url": "https://github.com/mphinance"
+  },
+  "homepage": "https://github.com/mphinance/alpha-skills",
+  "keywords": ["substack", "trading", "mphinance", "synthwave", "portable-kit"]
+}

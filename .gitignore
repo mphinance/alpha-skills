@@ -1,0 +1,38 @@
+# Secrets — never commit
+discord.txt
+discord_config.json
+*.token
+*secrets*.env
+*credentials*.json
+.env
+.env.*
+
+# Per-skill secret stashes
+skills/*/secrets/
+skills/*/.cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local Claude Code state (machine-specific)
+.claude/
+
+# Generated skill run artifacts
+skills/*/runs/
+plugins/*/skills/*/runs/
+
+# Installed deps inside skills (reinstalled per machine)
+**/node_modules/
+**/.venv/

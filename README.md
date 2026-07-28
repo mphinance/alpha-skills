@@ -3,12 +3,17 @@
 
   # 🌌 The Alpha Skills Suite
 
-  **113 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
+  **114 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
 
-  [![Stars](https://img.shields.io/github/stars/mphinance/antigravity-skills?style=for-the-badge&color=00e5ff)](https://github.com/mphinance/antigravity-skills/stargazers)
-  [![Skills](https://img.shields.io/badge/Agent_Skills-113-ff007f?style=for-the-badge)](#)
+  [![Stars](https://img.shields.io/github/stars/mphinance/alpha-skills?style=for-the-badge&color=00e5ff)](https://github.com/mphinance/alpha-skills/stargazers)
+  [![Skills](https://img.shields.io/badge/Agent_Skills-114-ff007f?style=for-the-badge)](#)
   [![Optimized](https://img.shields.io/badge/Optimized_For-Claude_%7C_Gemini-8a2be2?style=for-the-badge)](#)
   [![License](https://img.shields.io/badge/License-MIT-39ff14?style=for-the-badge)](#)
+
+  <br/>
+
+  <sub><b>The mphinance AI trading stack</b></sub><br/>
+  🧠 <b>Brain</b> · Alpha Skills (you are here) &nbsp;•&nbsp; 🖐️ <b>Hands</b> · <a href="https://github.com/mphinance/awesome-broker-mcp">awesome-broker-mcp</a> — which brokers an AI can actually trade through &nbsp;•&nbsp; 📡 <b>Intelligence</b> · <a href="https://www.traderdaddy.pro/?ref=8DUEMWAJ">TraderDaddy Pro</a>
 </div>
 
 ---
@@ -108,7 +113,7 @@ Most skills work out of the box with zero configuration. A subset of quant scree
 |-------|--------------|---------|
 | [pine-to-python](skills/pine-to-python/) | Translates TradingView PineScript into vectorized Python with auto-extracted params for Optuna optimization. | - |
 | [quant-feature-engineer](skills/quant-feature-engineer/) | Renaissance Tech-style feature engineering. Build unified scoring models instead of isolated strategies. | - |
-| [ghost-auto-trader](skills/ghost-auto-trader/) | TV webhook -> AI Gate -> Broker Execution pipeline for 0DTE options. | `TRADIER_API_KEY` |
+| [ghost-auto-trader](skills/ghost-auto-trader/) | TV webhook -> AI Gate -> [broker execution](https://github.com/mphinance/awesome-broker-mcp/blob/main/brokers/tradier.md) pipeline for 0DTE options. | `TRADIER_API_KEY` |
 | [backtest-expert](skills/backtest-expert/) | The "beat ideas to death" methodology. Slippage modeling, bias prevention, overfitting detection. | - |
 | [edge-strategy-reviewer](skills/edge-strategy-reviewer/) | LLM "Pessimistic Strategist". Issues PASS/REVISE/REJECT verdicts on strategy drafts. | - |
 | [strategy-pivot-designer](skills/strategy-pivot-designer/) | Detects Optuna local optima and proposes structurally different strategy pivots. | - |
@@ -180,8 +185,11 @@ edge-hint-extractor -> edge-concept-synthesizer -> edge-strategy-designer
 |-------|--------------|---------|
 | [position-sizer](skills/position-sizer/) | Risk-based sizing: Kelly Criterion, ATR scaling, sector heat checks. | - |
 | [options-strategy-advisor](skills/options-strategy-advisor/) | Black-Scholes pricing, Greeks, P/L simulation for complex structures. | `FMP_API_KEY` |
-| [portfolio-manager](skills/portfolio-manager/) | Connects to Alpaca MCP for allocation analysis, risk metrics, and rebalancing. | Alpaca MCP |
+| [portfolio-manager](skills/portfolio-manager/) | Connects to [Alpaca MCP](https://github.com/mphinance/awesome-broker-mcp/blob/main/brokers/alpaca.md) for allocation analysis, risk metrics, and rebalancing. | Alpaca MCP |
+| [broker-mcp-selector](skills/broker-mcp-selector/) | **The hands.** Picks a broker MCP server that can *execute* safely — backed by [awesome-broker-mcp](https://github.com/mphinance/awesome-broker-mcp). | - |
 | [trader-memory-core](skills/trader-memory-core/) | State machine tracking theses from idea to closed-trade MAE/MFE postmortem. | - |
+
+> **🖐️ From analysis to execution.** Every skill above decides *what* to trade. To actually place the order, [`broker-mcp-selector`](skills/broker-mcp-selector/) picks a broker whose MCP server can execute — read-only, draft-approval, or live — with paper-by-default, least-privilege defaults. It's backed by **[awesome-broker-mcp](https://github.com/mphinance/awesome-broker-mcp)**, a continuously re-verified directory of which brokers an AI agent can actually trade through, and how each behaves if the agent does something careless. The brain plans; that's the hands.
 
 ### Dividend & Income (Kanchi Method)
 

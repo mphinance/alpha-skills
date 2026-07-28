@@ -42,6 +42,15 @@ This skill requires Alpaca MCP Server to be configured and connected. The MCP se
 
 If Alpaca MCP Server is not connected, inform the user and provide setup instructions from `references/alpaca_mcp_setup.md`.
 
+> **Not using Alpaca?** This skill only needs *read* access to positions, so any
+> read-capable broker or aggregator works. See
+> [Alpaca in awesome-broker-mcp](https://github.com/mphinance/awesome-broker-mcp/blob/main/brokers/alpaca.md)
+> for this connector, or use the [`broker-mcp-selector`](../broker-mcp-selector/) skill to
+> pick a read-only route (e.g. [SnapTrade](https://github.com/mphinance/awesome-broker-mcp/blob/main/aggregators/snaptrade.md)
+> or [Truthifi](https://github.com/mphinance/awesome-broker-mcp/blob/main/aggregators/truthifi.md))
+> for accounts Alpaca doesn't cover. For analysis, prefer a **read-only** connection —
+> this skill never needs a trading scope.
+
 ## Workflow
 
 ### Step 1: Fetch Portfolio Data via Alpaca MCP

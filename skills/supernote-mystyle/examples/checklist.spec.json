@@ -1,0 +1,51 @@
+{
+  "title": "WEEKLY RESET",
+  "subtitle": "Nomad  ·  tick as you go  ·  * = must-do",
+  "tag": "RESET_V1",
+  "footer_left": "SUPERNOTE NOMAD · MYSTYLE",
+  "columns": [
+    [
+      {"section": "MORNING"},
+      {"item": "Inbox to zero", "pri": true},
+      {"item": "Plan the day"},
+      {"item": "Move the body"},
+      {"item": "Read 20 pages"},
+
+      {"section": "WORK"},
+      {"item": "Ship one real thing", "pri": true},
+      {"item": "Clear the review queue"},
+      {"item": "Close stale threads"},
+      {"item": "Write the weekly update"},
+      {"item": "Book next week's focus block"},
+
+      {"section": "MONEY"},
+      {"item": "Reconcile accounts", "pri": true},
+      {"item": "Review open positions"},
+      {"item": "Log the week's trades"},
+      {"item": "Check subscriptions"}
+    ],
+    [
+      {"section": "HOME"},
+      {"item": "Laundry"},
+      {"item": "Groceries"},
+      {"item": "Fix the one annoying thing"},
+      {"item": "Water the plants"},
+
+      {"section": "PEOPLE"},
+      {"item": "Call family", "pri": true},
+      {"item": "Reply to the message you avoided"},
+      {"item": "Make one plan for next week"},
+
+      {"section": "MAINTENANCE"},
+      {"item": "Back up files", "pri": true},
+      {"item": "Update the machines"},
+      {"item": "Clear the desktop"},
+      {"item": "Empty the downloads folder"},
+
+      {"section": "REVIEW"},
+      {"item": "What worked"},
+      {"item": "What didn't"},
+      {"item": "One change for next week", "pri": true}
+    ]
+  ]
+}

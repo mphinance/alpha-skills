@@ -1,0 +1,71 @@
+{
+  "title": "ICELAND & FAROE  ·  PACKING",
+  "subtitle": "Norwegian Star  ·  Aug 9-16  ·  50-55F, hard wind  ·  * = don't-skip",
+  "tag": "ICELAND_PACKING_V1",
+  "footer_left": "SUPERNOTE NOMAD · MYSTYLE",
+  "columns": [
+    [
+      {"section": "DOCUMENTS & MONEY"},
+      {"item": "Passport", "pri": true},
+      {"item": "Boarding pass / e-docs"},
+      {"item": "Cruise luggage tags", "pri": true},
+      {"item": "Travel insurance card"},
+      {"item": "Credit card, no-FX fee"},
+      {"item": "Backup card, kept separate"},
+      {"item": "Small ISK cash"},
+
+      {"section": "OUTER LAYERS"},
+      {"item": "Waterproof shell jacket", "pri": true},
+      {"item": "Waterproof pants"},
+      {"item": "Fleece or midlayer"},
+      {"item": "Packable puffer"},
+      {"item": "Hat, gloves, buff", "pri": true},
+
+      {"section": "FOOTWEAR"},
+      {"item": "Waterproof boots", "pri": true},
+      {"item": "Wool socks x5"},
+      {"item": "Deck shoes"},
+      {"item": "Flip-flops for the lagoon"},
+
+      {"section": "BASE LAYERS"},
+      {"item": "Merino tops x2", "pri": true},
+      {"item": "Merino bottoms"},
+      {"item": "Quick-dry shirts x4"},
+      {"item": "Underwear x8"}
+    ],
+    [
+      {"section": "SHORE DAYS"},
+      {"item": "Daypack, rain cover", "pri": true},
+      {"item": "Dry bag for the boat tours"},
+      {"item": "Binoculars for puffins"},
+      {"item": "Sunglasses"},
+      {"item": "Refillable water bottle"},
+      {"item": "Motion sickness tabs", "pri": true},
+
+      {"section": "SKY LAGOON"},
+      {"item": "Swimsuit", "pri": true},
+      {"item": "Quick-dry towel"},
+      {"item": "Hair tie / cap"},
+      {"item": "Check pickup: VOR terminal", "pri": true},
+
+      {"section": "SPECIALTY DINNERS"},
+      {"item": "Collared shirt x2", "pri": true},
+      {"item": "Dress trousers"},
+      {"item": "Dress shoes"},
+
+      {"section": "TECH"},
+      {"item": "Phone + charger", "pri": true},
+      {"item": "EU plug adapters x2", "pri": true},
+      {"item": "Power bank"},
+      {"item": "Supernote + pen"},
+      {"item": "Offline maps downloaded", "pri": true},
+      {"item": "Headphones"},
+
+      {"section": "HEALTH"},
+      {"item": "Meds, original bottles", "pri": true},
+      {"item": "Blister pads"},
+      {"item": "Lip balm, hand cream"},
+      {"item": "Basic first aid"}
+    ]
+  ]
+}

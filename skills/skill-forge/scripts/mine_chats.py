@@ -27,11 +27,12 @@ RECURSION_PATTERNS = [
 
 FRUSTRATION_PATTERNS = [
     (re.compile(r"\bugh\b", re.IGNORECASE), "ugh"),
-    (re.compile(r"\bagain\b", re.IGNORECASE), "again"),
     (re.compile(r"\bwhy do I have to\b", re.IGNORECASE), "why do I have to"),
     (re.compile(r"\bthis is annoying\b", re.IGNORECASE), "this is annoying"),
     (re.compile(r"\bkeep having to\b", re.IGNORECASE), "keep having to"),
     (re.compile(r"\bevery time\b", re.IGNORECASE), "every time"),
+    (re.compile(r"\bwish\s+(?:you|claude|it|this)\s+(?:could|would)\b", re.IGNORECASE), "wish you could"),
+    (re.compile(r"\bI hate\b", re.IGNORECASE), "I hate"),
 ]
 
 NEED_PATTERNS = [
@@ -55,32 +56,34 @@ STOPWORDS = {
 
 NAME_TRIGGER_RE = re.compile(r"^[a-z0-9][a-z0-9-]{2,40}$")
 
-ACTION_VERBS = {
-    "write", "writing", "wrote",
-    "build", "building", "built",
-    "fix", "fixing", "fixed",
-    "test", "testing", "tested",
-    "deploy", "deploying", "deployed",
-    "run", "running", "ran",
-    "create", "creating", "created",
-    "review", "reviewing", "reviewed",
-    "refactor", "refactoring", "refactored",
-    "debug", "debugging", "debugged",
-    "publish", "publishing", "published",
-    "schedule", "scheduling", "scheduled",
-    "audit", "auditing", "audited",
-    "generate", "generating", "generated",
-    "analyze", "analyzing", "analyzed",
-    "summarize", "summarizing", "summarized",
-    "automate", "automating", "automated",
-    "search", "searching", "searched",
-    "migrate", "migrating", "migrated",
-    "configure", "configuring", "configured",
-    "draft", "drafting", "drafted",
-    "render", "rendering", "rendered",
-    "import", "importing", "imported",
-    "export", "exporting", "exported",
-}
+REFINEMENT_ASK_TEMPLATES = [
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?should\s+(?:also\s+)?(?P<ask>[^.!?\n]{{6,160}})",
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?doesn'?t\s+(?P<ask>[^.!?\n]{{6,160}})",
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?can'?t\s+(?P<ask>[^.!?\n]{{6,160}})",
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?needs?\s+to\s+(?P<ask>[^.!?\n]{{6,160}})",
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?(?:is\s+)?missing\s+(?P<ask>[^.!?\n]{{6,160}})",
+    r"wish\s+(?:the\s+)?{skill}\s+(?:could|would|did)\s+(?P<ask>[^.!?\n]{{6,160}})",
+    r"add\s+(?:to\s+)?{skill}[:\s]+(?P<ask>[^.!?\n]{{6,160}})",
+    r"(?:the\s+)?{skill}\s+(?:skill\s+)?(?:also\s+)?supports?\s+(?P<ask>[^.!?\n]{{6,160}})",
+]
+
+
+def find_explicit_asks(text: str, skill_name: str) -> List[str]:
+    """Return user-stated refinement asks for skill_name found in text.
+
+    Only matches explicit patterns like 'X should also Y', 'wish X could Y',
+    'add to X: Y'. Word-overlap heuristics are deliberately not used.
+    """
+    asks: List[str] = []
+    skill_re = re.escape(skill_name)
+    for template in REFINEMENT_ASK_TEMPLATES:
+        pattern = re.compile(template.format(skill=skill_re), re.IGNORECASE)
+        for m in pattern.finditer(text):
+            ask = m.group("ask").strip(" -:,;")
+            if len(ask) < 6:
+                continue
+            asks.append(ask)
+    return asks
 
 
 def parse_timestamp(ts: Optional[str]) -> Optional[datetime]:
@@ -125,6 +128,12 @@ SYSTEM_NOISE_PATTERNS = [
     re.compile(r"^This session is being continued", re.IGNORECASE),
     re.compile(r"^The user opened the file", re.IGNORECASE),
     re.compile(r"^The user has updated the IDE", re.IGNORECASE),
+    # Skill-invocation prefix injected by the harness when a skill fires.
+    # The whole SKILL.md gets prepended to the user message; we do not want to
+    # mine that text as if the user typed it.
+    re.compile(r"^Base directory for this skill", re.IGNORECASE),
+    # Bare powershell prompts pasted as evidence of failures.
+    re.compile(r"^PS [A-Z]:\\", re.IGNORECASE),
 ]
 
 
@@ -138,11 +147,12 @@ def is_system_noise(text: str) -> bool:
     head = stripped[:200].lower()
     if head.startswith("caveat:") or "caveat: the messages below were generated" in head:
         return True
-    # Discard messages that are mostly file paths (>40% slash/backslash density)
+    # Discard messages that are mostly file paths. 3% slash density catches
+    # paste-heavy messages without flagging normal prose that mentions one path.
     sample = stripped[:500]
     if len(sample) >= 40:
         slashes = sample.count("/") + sample.count("\\")
-        if slashes / max(len(sample), 1) > 0.06:
+        if slashes / max(len(sample), 1) > 0.03:
             return True
     return False
 
@@ -165,10 +175,15 @@ def is_ssh_session(cwd: Optional[str], project_slug: str) -> bool:
 
 
 def normalize_for_ngrams(text: str) -> str:
-    """Strip code fences, urls, punctuation; lowercase for n-gram extraction."""
+    """Strip code fences, urls, paths, punctuation; lowercase for n-gram extraction."""
     text = re.sub(r"```.*?```", " ", text, flags=re.DOTALL)
     text = re.sub(r"`[^`]+`", " ", text)
     text = re.sub(r"https?://\S+", " ", text)
+    # Strip Windows-style absolute paths (C:\..., C:/...) and posix paths (/home/...).
+    text = re.sub(r"[A-Za-z]:[\\/][^\s]+", " ", text)
+    text = re.sub(r"(?:^|\s)/[A-Za-z][\w./-]+", " ", text)
+    # Strip leftover multi-segment backslash paths.
+    text = re.sub(r"\\[A-Za-z0-9_.-]+(?:\\[A-Za-z0-9_.-]+)+", " ", text)
     text = re.sub(r"[^A-Za-z'\s]", " ", text)
     return text.lower()
 
@@ -186,10 +201,6 @@ def ngrams(text: str, n: int = 5) -> Iterator[str]:
         yield " ".join(gram_words)
 
 
-def topic_tokens(text: str) -> Set[str]:
-    """Surface action verbs and notable nouns from a user message."""
-    words = [w for w in normalize_for_ngrams(text).split() if len(w) > 2 and w not in STOPWORDS]
-    return set(words)
 
 
 def iter_jsonl_rows(
@@ -309,16 +320,12 @@ def collect_signals(
     skill_names = [name for name, _ in discover_skills()]
     skill_text: Dict[str, str] = {name: load_skill_text(md) for name, md in discover_skills()}
 
-    skill_session_topics: Dict[str, Dict[str, Set[str]]] = {
-        name: defaultdict(set) for name in skill_names
-    }
-    skill_session_examples: Dict[str, Dict[str, List[str]]] = {
+    # Explicit refinement asks keyed by skill name then by ask-string.
+    explicit_asks: Dict[str, Dict[str, List[dict]]] = {
         name: defaultdict(list) for name in skill_names
     }
-    skill_invocation_sessions: Dict[str, Set[str]] = {name: set() for name in skill_names}
 
     session_user_messages: Dict[str, List[str]] = defaultdict(list)
-    session_assistant_skill_hits: Dict[str, Set[str]] = defaultdict(set)
 
     total_user = 0
     total_rows = 0
@@ -368,59 +375,21 @@ def collect_signals(
                     })
                     break
 
-            # Track skill name mentions in user text (cheap proximity proxy)
+            # Explicit refinement asks: only fire when the user clearly says
+            # "X should...", "wish X could...", etc. Word-overlap heuristics
+            # produced too much noise in early runs.
             lowered = text.lower()
             for sname in skill_names:
                 if sname == "skill-forge":
                     continue
-                if sname in lowered:
-                    session_assistant_skill_hits[session_id].add(sname)
-
-        elif msg_type == "assistant" and role == "assistant":
-            # Look for tool calls or skill invocations referencing a skill
-            content = msg.get("content")
-            blob_parts: List[str] = []
-            if isinstance(content, str):
-                blob_parts.append(content)
-            elif isinstance(content, list):
-                for c in content:
-                    if not isinstance(c, dict):
-                        continue
-                    ctype = c.get("type")
-                    if ctype == "text":
-                        blob_parts.append(c.get("text", ""))
-                    elif ctype == "tool_use":
-                        inp = c.get("input")
-                        if isinstance(inp, dict):
-                            skill_field = inp.get("skill") or inp.get("name") or ""
-                            if isinstance(skill_field, str):
-                                blob_parts.append(skill_field)
-            blob = " ".join(blob_parts).lower()
-            if blob:
-                for sname in skill_names:
-                    if sname == "skill-forge":
-                        continue
-                    if sname in blob:
-                        session_assistant_skill_hits[session_id].add(sname)
-
-    # Second pass over collected user messages per session, attribute topics to invoked skills
-    for sid, hits in session_assistant_skill_hits.items():
-        if not hits:
-            continue
-        msgs = session_user_messages.get(sid, [])
-        if not msgs:
-            continue
-        tokens: Set[str] = set()
-        for m in msgs:
-            tokens |= topic_tokens(m)
-        verbs_in_session = tokens & ACTION_VERBS
-        for sname in hits:
-            skill_invocation_sessions[sname].add(sid)
-            skill_session_topics[sname][sid] |= verbs_in_session
-            # Keep up to 2 example messages per skill per session
-            for m in msgs[:2]:
-                if len(skill_session_examples[sname][sid]) < 2:
-                    skill_session_examples[sname][sid].append(shorten(m))
+                if sname not in lowered:
+                    continue
+                for ask in find_explicit_asks(text, sname):
+                    explicit_asks[sname][ask.lower()].append({
+                        "session_id": session_id,
+                        "ask": ask,
+                        "message": shorten(text, 320),
+                    })
 
     # Build new_skill_candidates from grams meeting threshold
     candidates: List[dict] = []
@@ -440,32 +409,25 @@ def collect_signals(
         })
     candidates.sort(key=lambda c: (-c["session_count"], -c["total_occurrences"]))
 
-    # Build refinement_candidates: topics mentioned alongside a skill but absent from SKILL.md
+    # Build refinement_candidates from explicit user asks only.
+    # Drop asks whose text already appears in the existing SKILL.md.
     refinements: Dict[str, dict] = {}
-    for sname, per_session_topics in skill_session_topics.items():
+    for sname, asks_by_key in explicit_asks.items():
         existing = skill_text.get(sname, "")
-        if not existing and not per_session_topics:
-            continue
-        topic_session_counts: Counter = Counter()
-        topic_examples: Dict[str, List[str]] = defaultdict(list)
-        for sid, topics in per_session_topics.items():
-            for t in topics:
-                topic_session_counts[t] += 1
-                examples = skill_session_examples[sname].get(sid, [])
-                for ex in examples:
-                    if ex not in topic_examples[t] and len(topic_examples[t]) < 3:
-                        topic_examples[t].append(ex)
-        for topic, sess_n in topic_session_counts.items():
-            if sess_n < 2:
+        for ask_key, hits in asks_by_key.items():
+            if ask_key in existing:
                 continue
-            if topic in existing:
-                continue
-            key = f"{sname}::{topic}"
-            refinements[key] = {
+            sessions = {h["session_id"] for h in hits}
+            evidence = []
+            for h in hits[:3]:
+                if h["message"] not in evidence:
+                    evidence.append(h["message"])
+            refinements[f"{sname}::{ask_key}"] = {
                 "skill": sname,
-                "missing_topic": topic,
-                "session_count": sess_n,
-                "evidence_messages": topic_examples[topic],
+                "missing_topic": hits[0]["ask"],
+                "session_count": len(sessions),
+                "occurrences": len(hits),
+                "evidence_messages": evidence,
             }
 
     stats = {

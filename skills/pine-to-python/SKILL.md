@@ -1,5 +1,5 @@
 ---
-name: pinescript-to-python-translator
+name: pine-to-python
 description: "Translate TradingView PineScript strategies into vectorized Python strategies suitable for Optuna optimization and walk-forward analysis."
 ---
 

@@ -1,0 +1,379 @@
+{
+  "date": "2026-07-27",
+  "stamp": "2026-07-27_1700",
+  "generatedAt": "2026-07-27T21:01:01.940Z",
+  "shortlist": [
+    "IREN",
+    "NOW",
+    "NVDA",
+    "OPLN",
+    "FTNT",
+    "LYV",
+    "HSIC",
+    "IDA",
+    "GTY",
+    "NTRS",
+    "CYTK",
+    "POR",
+    "QQQ",
+    "SPY",
+    "TLT"
+  ],
+  "health": {
+    "screeners": "11/11 ran",
+    "stoch40": "131/132 charted",
+    "watchStore": "26 tracked · 4 graduated · 0 aged",
+    "flow": "300 alerts, 68 tickers",
+    "cboe": "17 new optionable",
+    "communityWatch": "9 watched",
+    "hedgeFunds": "3 top buys, 2 cross-fund, 25 buying",
+    "earnings": "1504 reporting this week",
+    "econCalendar": "0 events",
+    "regime": "RISK-OFF (score -30)",
+    "sectorFlow": "25 sectors",
+    "enrich": "4/4 flow/fund names enriched"
+  },
+  "watchlist": {
+    "count": 26,
+    "names": {
+      "MIDD": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 133.22,
+        "lastPrice": 136,
+        "lastK": 39,
+        "seenCount": 15,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "CAH": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 228.52,
+        "lastPrice": 229.35,
+        "lastK": 34,
+        "seenCount": 15,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum",
+          "volatility-squeeze"
+        ]
+      },
+      "OPLN": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 39.46,
+        "lastPrice": 40.12,
+        "lastK": 28,
+        "seenCount": 15,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "CYTK": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 80.18,
+        "lastPrice": 80.62,
+        "lastK": 31,
+        "seenCount": 15,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "TTWO": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 236.68,
+        "lastPrice": 243.95,
+        "lastK": 21,
+        "seenCount": 15,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "EXTR": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 30.34,
+        "lastPrice": 29.95,
+        "lastK": 19,
+        "seenCount": 15,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "LYV": {
+        "firstTracked": "2026-07-19",
+        "lastSeen": "2026-07-27",
+        "startPrice": 180.22,
+        "lastPrice": 179.4,
+        "lastK": 20,
+        "seenCount": 15,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "PNW": {
+        "firstTracked": "2026-07-20",
+        "lastSeen": "2026-07-27",
+        "startPrice": 106.3,
+        "lastPrice": 105.38,
+        "lastK": 14,
+        "seenCount": 8,
+        "onScreener": false,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "MITK": {
+        "firstTracked": "2026-07-20",
+        "lastSeen": "2026-07-27",
+        "startPrice": 18.7,
+        "lastPrice": 17.01,
+        "lastK": 18,
+        "seenCount": 8,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "MNST": {
+        "firstTracked": "2026-07-21",
+        "lastSeen": "2026-07-27",
+        "startPrice": 94.46,
+        "lastPrice": 95.33,
+        "lastK": 15,
+        "seenCount": 7,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "WAFD": {
+        "firstTracked": "2026-07-21",
+        "lastSeen": "2026-07-27",
+        "startPrice": 37.08,
+        "lastPrice": 36.43,
+        "lastK": 15,
+        "seenCount": 7,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "FTNT": {
+        "firstTracked": "2026-07-22",
+        "lastSeen": "2026-07-27",
+        "startPrice": 155.05,
+        "lastPrice": 152.38,
+        "lastK": 6,
+        "seenCount": 6,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "FFIV": {
+        "firstTracked": "2026-07-22",
+        "lastSeen": "2026-07-27",
+        "startPrice": 400.61,
+        "lastPrice": 407.96,
+        "lastK": 21,
+        "seenCount": 6,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "ZION": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 68.71,
+        "lastPrice": 68.52,
+        "lastK": 22,
+        "seenCount": 5,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "KEY": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 22.66,
+        "lastPrice": 22.51,
+        "lastK": 10,
+        "seenCount": 5,
+        "onScreener": true,
+        "sources": [
+          "gamma-scan"
+        ]
+      },
+      "UBS": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 51.55,
+        "lastPrice": 52.54,
+        "lastK": 28,
+        "seenCount": 4,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "POR": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 52.39,
+        "lastPrice": 51.23,
+        "lastK": 14,
+        "seenCount": 4,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "HSIC": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 84.53,
+        "lastPrice": 84.61,
+        "lastK": 36,
+        "seenCount": 4,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "ACIW": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 54.53,
+        "lastPrice": 57.88,
+        "lastK": 38,
+        "seenCount": 4,
+        "onScreener": false,
+        "sources": [
+          "bullish-pullback",
+          "momentum"
+        ]
+      },
+      "NTRS": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 177.95,
+        "lastPrice": 182.52,
+        "lastK": 32,
+        "seenCount": 4,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "WTFC": {
+        "firstTracked": "2026-07-23",
+        "lastSeen": "2026-07-27",
+        "startPrice": 157.77,
+        "lastPrice": 158.88,
+        "lastK": 26,
+        "seenCount": 4,
+        "onScreener": false,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "FFBC": {
+        "firstTracked": "2026-07-24",
+        "lastSeen": "2026-07-27",
+        "startPrice": 33.87,
+        "lastPrice": 33.58,
+        "lastK": 20,
+        "seenCount": 3,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "GTY": {
+        "firstTracked": "2026-07-24",
+        "lastSeen": "2026-07-27",
+        "startPrice": 34.8,
+        "lastPrice": 35.05,
+        "lastK": 30,
+        "seenCount": 3,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "GL": {
+        "firstTracked": "2026-07-24",
+        "lastSeen": "2026-07-27",
+        "startPrice": 173.48,
+        "lastPrice": 174.37,
+        "lastK": 21,
+        "seenCount": 3,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "ABCB": {
+        "firstTracked": "2026-07-24",
+        "lastSeen": "2026-07-27",
+        "startPrice": 87.73,
+        "lastPrice": 86.04,
+        "lastK": 27,
+        "seenCount": 3,
+        "onScreener": false,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      },
+      "IDA": {
+        "firstTracked": "2026-07-27",
+        "lastSeen": "2026-07-27",
+        "startPrice": 148.02,
+        "lastPrice": 148.02,
+        "lastK": 40,
+        "seenCount": 1,
+        "onScreener": true,
+        "sources": [
+          "momentum",
+          "bullish-pullback"
+        ]
+      }
+    }
+  }
+}

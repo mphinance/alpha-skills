@@ -1,0 +1,11 @@
+{
+  "name": "quant-skills",
+  "version": "1.0.0",
+  "description": "63 elite quantitative trading, screening, technical analysis, macro regime detection, options analysis, and broker execution skills for AI agents.",
+  "author": {
+    "name": "Michael Hanko",
+    "url": "https://github.com/mphinance"
+  },
+  "homepage": "https://github.com/mphinance/alpha-skills",
+  "keywords": ["trading", "quant", "screening", "options", "webull", "technical-analysis", "macro"]
+}

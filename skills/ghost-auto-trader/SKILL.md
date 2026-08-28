@@ -1,6 +1,6 @@
 ---
 name: ghost-auto-trader
-description: Architect and deploy the Ghost Auto-Trader framework: a zero-DTE options trading pipeline using TradingView webhooks, AI-gate validation, and broker execution.
+description: "Architect and deploy the Ghost Auto-Trader framework: a zero-DTE options trading pipeline using TradingView webhooks, AI-gate validation, and broker execution."
 ---
 
 # Ghost Auto-Trader Architecture

@@ -3,10 +3,10 @@
 
   # 🌌 The Alpha Skills Suite
 
-  **114 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
+  **129 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
 
   [![Stars](https://img.shields.io/github/stars/mphinance/alpha-skills?style=for-the-badge&color=00e5ff)](https://github.com/mphinance/alpha-skills/stargazers)
-  [![Skills](https://img.shields.io/badge/Agent_Skills-114-ff007f?style=for-the-badge)](#)
+  [![Skills](https://img.shields.io/badge/Agent_Skills-129-ff007f?style=for-the-badge)](#)
   [![Optimized](https://img.shields.io/badge/Optimized_For-Claude_%7C_Gemini-8a2be2?style=for-the-badge)](#)
   [![License](https://img.shields.io/badge/License-MIT-39ff14?style=for-the-badge)](#)
 

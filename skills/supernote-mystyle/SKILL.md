@@ -1,6 +1,6 @@
 ---
 name: supernote-mystyle
-description: A round-trip system for Supernote e-ink tablets. A small JSON spec is the shared contract between human and agent: the agent renders it into a device-correct "MyStyle" template PNG, the human writes/ticks on the tablet, exports the note, and the agent reconciles the marks back into a master list. Use when the user wants a Supernote/Nomad/Manta/A5X custom template, a reusable pen-and-paper checklist for e-ink, a "MyStyle" background, or a hand-off loop where a tablet note updates a tracked list. Triggers: "supernote template", "mystyle template", "nomad checklist", "e-ink template", "make a template I can tick off", "sync my supernote note back".
+description: "A round-trip system for Supernote e-ink tablets. A small JSON spec is the shared contract between human and agent: the agent renders it into a device-correct 'MyStyle' template PNG, the human writes/ticks on the tablet, exports the note, and the agent reconciles the marks back into a master list. Use when the user wants a Supernote/Nomad/Manta/A5X custom template, a reusable pen-and-paper checklist for e-ink, a 'MyStyle' background, or a hand-off loop where a tablet note updates a tracked list. Triggers: 'supernote template', 'mystyle template', 'nomad checklist', 'e-ink template', 'make a template I can tick off', 'sync my supernote note back'."
 ---
 
 # Supernote MyStyle round-trip

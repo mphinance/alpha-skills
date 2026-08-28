@@ -5,14 +5,19 @@
     "url": "https://github.com/mphinance"
   },
   "metadata": {
-    "description": "Michael Hanko's Claude Code marketplace. Source of truth for his portable skill/command/agent kit so every machine runs the same setup.",
-    "version": "1.0.0"
+    "description": "Michael Hanko's Claude Code marketplace: source of truth for elite quant trading skills, portable toolkits, and agent workflows.",
+    "version": "2.0.0"
   },
   "plugins": [
     {
+      "name": "quant-skills",
+      "source": "./plugins/quant-skills",
+      "description": "63 elite quantitative trading, screening, technical analysis, macro regime detection, options analysis, and broker execution skills for AI agents."
+    },
+    {
       "name": "mph-kit",
       "source": "./plugins/mph-kit",
-      "description": "Michael's curated, portable Claude Code kit: 28 skills (Substack pipeline, trading research, design, meta-tools) plus 6 slash commands and 3 subagents. Install this on every machine to stay in sync."
+      "description": "Michael's curated personal Claude Code kit: 28 skills (Substack pipeline, trading research, design, meta-tools) plus 6 slash commands and 3 subagents."
     }
   ]
 }

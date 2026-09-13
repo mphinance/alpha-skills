@@ -13,7 +13,7 @@
   <br/>
 
   <sub><b>The mphinance AI trading stack</b></sub><br/>
-  🧠 <b>Brain</b> · Alpha Skills (you are here) &nbsp;•&nbsp; 🖐️ <b>Hands</b> · <a href="https://github.com/mphinance/awesome-broker-mcp">awesome-broker-mcp</a> — which brokers an AI can actually trade through &nbsp;•&nbsp; 📡 <b>Intelligence</b> · <a href="https://www.traderdaddy.pro/?ref=8DUEMWAJ">TraderDaddy Pro</a>
+  🧠 <b>Brain</b> · Alpha Skills (you are here) &nbsp;•&nbsp; 🖐️ <b>Hands</b> · <a href="https://github.com/mphinance/awesome-broker-mcp">awesome-broker-mcp</a> — which brokers an AI can actually trade through &nbsp;•&nbsp; 📡 <b>Intelligence</b> · <a href="https://tradermatrix.pro/?ref=MPHINANCE">TraderMatrix Pro</a> &nbsp;•&nbsp; 🔧 <b>Free Tools</b> · <a href="https://github.com/mphinance/momentum-mcp">momentum-mcp</a> — 73 open MCP tools a skill can call instead of hitting a paid API directly &nbsp;•&nbsp; 🤖 <b>Agent</b> · <a href="https://github.com/mphinance/trading-agent">Vesper</a> — a LangGraph agent that runs on these tools with a human approval gate before any order
 </div>
 
 ---
@@ -317,7 +317,7 @@ edge-hint-extractor -> edge-concept-synthesizer -> edge-strategy-designer
 The days of manual trading and generic ChatGPT prompts are over. If you are a hedge fund, prop desk, or SaaS founder looking to implement autonomous workflows, custom LLM strategy evaluators, or high-frequency data pipelines:
 
 - **Newsletter & Deep Dives:** [mphinance.substack.com](https://mphinance.substack.com/)
-- **Trading Tools:** [TraderDaddy Pro](https://www.traderdaddy.pro/?ref=8DUEMWAJ)
+- **Trading Tools:** [TraderMatrix Pro](https://tradermatrix.pro/?ref=MPHINANCE)
 - **Support the Project:** [Buy me a coffee on Ko-fi](https://ko-fi.com/mphinance)
 
 *Built by [@mphinance](https://github.com/mphinance).*

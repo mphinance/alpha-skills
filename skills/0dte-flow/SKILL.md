@@ -28,6 +28,23 @@ risk)**, with 0DTE M/W/F on Tradier. Cheap enough for a small account.
 | Strike | 2–3 OTM ($0.15–$0.50/contract) |
 | Max daily loss | $60 (2 full losers = walk away) |
 
+## Pricing sanity-check before entry
+
+Before sizing into a signal, `vesper.py reprice` gives a theoretical price for
+the exact contract at the spot you're looking at (handy premarket, or on any
+fast SPY/XSP move, when the quote you last saw is already stale):
+
+```bash
+vesper.py reprice SPY --strike 675 --expiry 2026-03-10 --otype call --spot 674.80 --iv 14
+```
+
+It carries forward the contract's real quoted IV (flagging it if the quote
+looks stale/illiquid) or falls back to realized vol, then reports an
+IV-sensitivity table — three prices at the assumed IV and ±15% of it — since
+the IV guess is the whole ballgame for a same-day contract. `get_iv_rank`
+(MCP tool) tells you whether premium is rich or cheap vs. this name's own
+52-week range before you commit size.
+
 ## Entry — ALL must hold
 
 ```

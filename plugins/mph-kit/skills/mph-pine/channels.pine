@@ -1,0 +1,678 @@
+// Ghost Channels [mph1nance] - Auto Parallel Trend Channel + Confirmations
+// © mph1nance + Sam the Quant Ghost
+//
+// PURPOSE: Auto-fits a trend channel with two PARALLEL rails on the last N
+// bars and reports what actually matters: fit quality (r2), where price sits in
+// the channel, channel width in ATR, rail touches (validation), slope, breakout
+// state, and a faithful 0-100 Urgency score. On top of the geometry it layers
+// the confirmations that turn a drawing into a decision:
+//
+//   • Candle reactions AT the rails (hammer / engulfing / star / doji). A
+//     reversal candle is only flagged when it prints on a rail, not in open
+//     space. Context is the whole point.
+//   • Volume-confirmed breakouts vs likely traps (median-volume gate).
+//   • Fakeout flags (broke a rail, closed back inside).
+//   • Reward / risk on the active setup (stop beyond the rail, target the
+//     opposite rail).
+//   • Higher-timeframe channel agreement (Pine v6 dynamic request).
+//   • Measured-move target on a confirmed break.
+//   • A SETUP verdict: LONG / SHORT / WAIT with a confidence tally.
+//
+// This is a faithful Pine v6 port of the mphinance `channels.py` + `scoring.py`
+// engine. Fit math, classify, touches, breakout, the auto-scorer, the Urgency
+// model, and the volume-confirm / RR constants all match the Python source.
+// Constants from config.py: STD_MULT 2.0, SLOPE_ATR_THRESHOLD 0.05,
+// TOUCH_TOLERANCE 0.05, BREAKOUT_BUFFER 0.02, PIVOT_SWING_LOOKBACK 3,
+// ATR_PERIOD 14, MIN_BARS 20, POSITION_NEAR 0.15/0.85, R2_NOISE_FLOOR 0.30,
+// VOLUME_CONFIRM_MULT 1.5 / LOOKBACK 20, RR_STOP_ATR_BUFFER 0.5.
+
+//@version=6
+indicator("Ghost Channels [mph1nance]", "👻📐", overlay=true, max_bars_back=600, max_lines_count=30, max_labels_count=50)
+
+// ═══════════════════════════════════════════════════════════════
+// ████  COLOR PALETTE - Synthwave Arcade  ████
+// ═══════════════════════════════════════════════════════════════
+const color C_BULL    = #00FFFF
+const color C_BEAR    = #FF00FF
+const color C_NEUTRAL = #9C27B0
+const color C_BREAK   = #FF3D00
+const color C_CONF    = #00FFCC
+const color C_WARN    = #FFD740
+const color C_TRAP    = #FF6E40
+const color C_BG      = #090014
+const color C_BORDER  = #FF00FF
+const color C_TEXT    = #00FFFF
+
+// ═══════════════════════════════════════════════════════════════
+// ████  ENUMS (Pine v6)  ████
+// ═══════════════════════════════════════════════════════════════
+enum FitMethod
+    auto       = "Auto (best fit)"
+    regression = "Regression"
+    pivot      = "Pivot"
+
+// ═══════════════════════════════════════════════════════════════
+// ████  INPUTS  ████
+// ═══════════════════════════════════════════════════════════════
+g_fit        = "━━━ 📐 Fit ━━━"
+method       = input.enum(FitMethod.auto, "Fit method", group=g_fit)
+length       = input.int(100, "Lookback bars", minval=20, maxval=500, group=g_fit, tooltip="Bars used in the fit. Engine MIN_BARS is 20. Higher = heavier compute.")
+std_mult     = input.float(2.0, "Regression rail width (std-devs)", minval=0.5, step=0.1, group=g_fit)
+slope_thr    = input.float(0.05, "Slope/ATR flat threshold", minval=0.0, step=0.01, group=g_fit, tooltip="ATR-normalized rail slope below this is classed horizontal.")
+touch_tol    = input.float(0.05, "Touch tolerance (x width)", minval=0.0, step=0.01, group=g_fit)
+brk_buf      = input.float(0.02, "Breakout buffer (x width)", minval=0.0, step=0.01, group=g_fit)
+pivot_lb     = input.int(3, "Pivot swing lookback", minval=1, maxval=10, group=g_fit)
+atr_len      = input.int(14, "ATR length", minval=1, group=g_fit)
+
+g_conf       = "━━━ ✅ Confirmations ━━━"
+use_candles  = input.bool(true, "Candle reactions at rails", group=g_conf)
+use_vol      = input.bool(true, "Volume-confirm breakouts", group=g_conf)
+vol_mult     = input.float(1.5, "Volume confirm (x median)", minval=1.0, step=0.1, group=g_conf)
+vol_lb       = input.int(20, "Volume median lookback", minval=5, group=g_conf)
+use_fake     = input.bool(true, "Flag fakeouts", group=g_conf)
+use_mm       = input.bool(true, "Measured-move target", group=g_conf)
+rr_buf       = input.float(0.5, "RR stop buffer (ATR beyond rail)", minval=0.0, step=0.1, group=g_conf)
+htf1_tf      = input.timeframe("", "Higher-TF #1 (blank = off)", group=g_conf, tooltip="Confirms channel direction on a higher timeframe via a lightweight regression read. Non-repainting (lookahead off).")
+htf2_tf      = input.timeframe("", "Higher-TF #2 (blank = off)", group=g_conf)
+
+g_vis        = "━━━ 🎨 Visuals ━━━"
+show_fill    = input.bool(true, "Fill channel", group=g_vis)
+show_mid     = input.bool(true, "Show midline", group=g_vis)
+show_brk     = input.bool(true, "Mark breakout", group=g_vis)
+
+g_dash       = "━━━ 📋 Dashboard ━━━"
+show_tbl     = input.bool(true, "Show dashboard", group=g_dash)
+dash_pos     = input.string("Top Right", "Position", options=["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group=g_dash)
+dash_size    = input.string("Small", "Text size", options=["Tiny", "Small", "Normal"], group=g_dash)
+
+// ═══════════════════════════════════════════════════════════════
+// ████  CORE MATH - faithful port of channels.py  ████
+// ═══════════════════════════════════════════════════════════════
+
+// Array index convention to match the Python engine: a = 0..len-1, where a = 0
+// is the OLDEST bar in the window and a = len-1 is the latest. The series
+// offset for array index a is (len-1) - a, i.e. close[(len-1)-a].
+
+// Least-squares line over the last `len` bars of a series. Returns slope,
+// intercept (at a = 0, the oldest bar), and r2. Mirrors _linreg().
+f_linreg(float src, int len) =>
+    float n   = len
+    float sx  = 0.0
+    float sy  = 0.0
+    float sxx = 0.0
+    float sxy = 0.0
+    float syy = 0.0
+    for i = 0 to len - 1
+        float xi = i
+        float yi = src[(len - 1) - i]
+        sx  += xi
+        sy  += yi
+        sxx += xi * xi
+        sxy += xi * yi
+        syy += yi * yi
+    float denx  = n * sxx - sx * sx
+    float deny  = n * syy - sy * sy
+    float slope = denx == 0.0 ? 0.0 : (n * sxy - sx * sy) / denx
+    float icept = (sy - slope * sx) / n
+    float r2raw = (denx == 0.0 or deny == 0.0) ? 0.0 : math.pow(n * sxy - sx * sy, 2) / (denx * deny)
+    float r2    = math.max(0.0, math.min(1.0, r2raw))
+    [slope, icept, r2]
+
+// Least-squares over two equal-length arrays. Mirrors _linreg() on pivots.
+f_linreg_arr(array<float> xarr, array<float> yarr) =>
+    int n = array.size(xarr)
+    float sx  = 0.0
+    float sy  = 0.0
+    float sxx = 0.0
+    float sxy = 0.0
+    for i = 0 to n - 1
+        float xi = array.get(xarr, i)
+        float yi = array.get(yarr, i)
+        sx  += xi
+        sy  += yi
+        sxx += xi * xi
+        sxy += xi * yi
+    float denx  = n * sxx - sx * sx
+    float slope = denx == 0.0 ? 0.0 : (n * sxy - sx * sy) / denx
+    float icept = n == 0 ? 0.0 : (sy - slope * sx) / n
+    [slope, icept]
+
+// Residual std-dev of closes about the regression line. Mirrors np.std(resid).
+f_resid_std(float slope, float icept, int len) =>
+    float ss = 0.0
+    for i = 0 to len - 1
+        float yi    = close[(len - 1) - i]
+        float resid = yi - (slope * i + icept)
+        ss += resid * resid
+    math.sqrt(ss / len)
+
+// Touch count: bars whose high tags the upper rail or low tags the lower rail
+// within touch_tol * width. Mirrors the _finalize() touches block.
+f_touches(float slope, float up_int, float lo_int, int len, float width) =>
+    float tol = touch_tol * width
+    int cnt = 0
+    for i = 0 to len - 1
+        float up_i = slope * i + up_int
+        float lo_i = slope * i + lo_int
+        float hi_v = high[(len - 1) - i]
+        float lo_v = low[(len - 1) - i]
+        if math.abs(hi_v - up_i) <= tol or math.abs(lo_v - lo_i) <= tol
+            cnt += 1
+    cnt
+
+// Trailing bars that have closed beyond the broken rail. Mirrors the
+// breakout_bars loop (walk back from latest, stop at first non-pierce).
+f_breakout_bars(float slope, float up_int, float lo_int, int len, float width, bool isAbove) =>
+    float buf = brk_buf * width
+    int cnt = 0
+    bool still = true
+    for o = 0 to len - 1
+        if still
+            float a    = (len - 1) - o
+            float c    = close[o]
+            float up_o = slope * a + up_int
+            float lo_o = slope * a + lo_int
+            if isAbove and c > up_o + buf
+                cnt += 1
+            else if (not isAbove) and c < lo_o - buf
+                cnt += 1
+            else
+                still := false
+    cnt
+
+// Pivot fit. Detrend high/low, find swing extrema, fit each rail, then share
+// the averaged slope and re-anchor intercepts. Mirrors _fit_pivot().
+f_pivot_fit(int len, int lb) =>
+    [hs, hi0, _hr] = f_linreg(high, len)
+    [lsl, li0, _lr] = f_linreg(low, len)
+    array<float> xs_hi = array.new_float()
+    array<float> ys_hi = array.new_float()
+    array<float> xs_lo = array.new_float()
+    array<float> ys_lo = array.new_float()
+    for a = lb to len - 1 - lb
+        float ch = high[(len - 1) - a] - (hs * a + hi0)
+        float cl = low[(len - 1) - a] - (lsl * a + li0)
+        bool is_hi = true
+        bool is_lo = true
+        for w = -lb to lb
+            int aa = a + w
+            float dh = high[(len - 1) - aa] - (hs * aa + hi0)
+            float dl = low[(len - 1) - aa] - (lsl * aa + li0)
+            if dh > ch
+                is_hi := false
+            if dl < cl
+                is_lo := false
+        if is_hi
+            array.push(xs_hi, a)
+            array.push(ys_hi, high[(len - 1) - a])
+        if is_lo
+            array.push(xs_lo, a)
+            array.push(ys_lo, low[(len - 1) - a])
+    bool valid = array.size(xs_hi) >= 2 and array.size(xs_lo) >= 2
+    float shared = 0.0
+    float up_int = 0.0
+    float lo_int = 0.0
+    float r2 = 0.0
+    if valid
+        [ups, _ui] = f_linreg_arr(xs_hi, ys_hi)
+        [los, _li] = f_linreg_arr(xs_lo, ys_lo)
+        shared := (ups + los) / 2.0
+        up_int := array.avg(ys_hi) - shared * array.avg(xs_hi)
+        lo_int := array.avg(ys_lo) - shared * array.avg(xs_lo)
+        float center_int = (up_int + lo_int) / 2.0
+        float cmean = 0.0
+        for i = 0 to len - 1
+            cmean += close[(len - 1) - i]
+        cmean := cmean / len
+        float ss_res = 0.0
+        float ss_tot = 0.0
+        for i = 0 to len - 1
+            float c    = close[(len - 1) - i]
+            float pred = shared * i + center_int
+            ss_res += (c - pred) * (c - pred)
+            ss_tot += (c - cmean) * (c - cmean)
+        r2 := ss_tot == 0.0 ? 0.0 : math.max(0.0, math.min(1.0, 1.0 - ss_res / ss_tot))
+    [valid, shared, up_int, lo_int, r2]
+
+// Lightweight channel direction for the higher-TF read. Uses the regression
+// slope only (cheap, no rails) so the HTF request stays fast. Mirrors _classify.
+f_htf_kind(int len, int al, float thr) =>
+    float lr0 = ta.linreg(close, len, 0)
+    float lr1 = ta.linreg(close, len, 1)
+    float sl  = lr0 - lr1
+    float a   = ta.atr(al)
+    float nrm = a > 0.0 ? sl / a : 0.0
+    nrm > thr ? "ASCENDING" : nrm < -thr ? "DESCENDING" : "HORIZONTAL"
+
+// Short arrow glyph for a channel kind. Used in the dashboard TF stack.
+f_arrow(string k) => k == "ASCENDING" ? "▲" : k == "DESCENDING" ? "▼" : "═"
+
+// Urgency 0-100. Faithful port of scoring.py score().
+f_urgency(string knd, float pos, string brk, float r2, int tch) =>
+    float u = 0.0
+    bool near_lower = pos <= 0.15
+    bool near_upper = pos >= 0.85
+    if knd == "HORIZONTAL" or r2 < 0.30
+        u := math.max(0.0, math.min(15.0, 35.0 * (r2 / 0.30) * 0.4))
+    else
+        u := 35.0
+        bool situational = false
+        if knd == "DESCENDING" and brk == "ABOVE"
+            u := math.max(u, 90.0)
+            situational := true
+        else if knd == "ASCENDING" and near_lower and brk == "NONE"
+            u := math.max(u, 75.0)
+            situational := true
+        else if knd == "DESCENDING" and near_upper and brk == "NONE"
+            u := math.max(u, 75.0)
+            situational := true
+        if not situational and brk != "NONE"
+            u := math.max(u, 60.0)
+        u := u + 15.0 * r2
+        u := u + 10.0 * math.min(tch, 6) / 6.0
+        u := math.max(0.0, math.min(100.0, u))
+    u
+
+// ───────────────────────────────────────────────────────────────
+// Fit selection
+// ───────────────────────────────────────────────────────────────
+float atr = ta.atr(atr_len)
+bool has_chan = bar_index >= length - 1 and atr > 0.0
+
+// Regression candidate.
+[r_slope, r_icept, r_r2] = f_linreg(close, length)
+float r_std = f_resid_std(r_slope, r_icept, length)
+float r_off = std_mult * (r_std > 0.0 ? r_std : (atr * 0.5 > 0.0 ? atr * 0.5 : 1.0))
+float r_up  = r_icept + r_off
+float r_lo  = r_icept - r_off
+float r_w   = r_up - r_lo
+int   r_tch = has_chan ? f_touches(r_slope, r_up, r_lo, length, r_w) : 0
+float r_score = r_r2 + 0.25 * math.min(r_tch, 6) / 6.0
+
+// Pivot candidate.
+[p_ok, p_slope, p_up, p_lo, p_r2] = f_pivot_fit(length, pivot_lb)
+float p_w   = p_up - p_lo
+int   p_tch = (has_chan and p_ok and p_w > 0.0) ? f_touches(p_slope, p_up, p_lo, length, p_w) : 0
+float p_score = p_ok ? p_r2 + 0.25 * math.min(p_tch, 6) / 6.0 : -1.0
+
+// Choose. Auto keeps the higher score; explicit modes force the method.
+bool use_pivot = switch method
+    FitMethod.regression => false
+    FitMethod.pivot      => p_ok
+    => p_ok and p_score > r_score
+
+float slope = use_pivot ? p_slope : r_slope
+float up_int = use_pivot ? p_up : r_up
+float lo_int = use_pivot ? p_lo : r_lo
+float fit_r2 = use_pivot ? p_r2 : r_r2
+float width  = use_pivot ? p_w : r_w
+int   touches = use_pivot ? p_tch : r_tch
+string fit_name = use_pivot ? "PIVOT" : "REGRESSION"
+
+// Pivot was requested but not available: no channel this bar.
+bool chan_ok = has_chan and width > 0.0 and not (method == FitMethod.pivot and not p_ok)
+
+// ───────────────────────────────────────────────────────────────
+// Situational fields (finalize)
+// ───────────────────────────────────────────────────────────────
+float upper_last = slope * (length - 1) + up_int
+float lower_last = slope * (length - 1) + lo_int
+float center_last = (upper_last + lower_last) / 2.0
+
+float width_atr = atr > 0.0 ? width / atr : 0.0
+float pos_chan  = width > 0.0 ? math.max(0.0, math.min(1.0, (close - lower_last) / width)) : 0.0
+float slope_pct = center_last != 0.0 ? slope / center_last * 100.0 : 0.0
+
+float norm = atr > 0.0 ? slope / atr : 0.0
+string kind = norm > slope_thr ? "ASCENDING" : norm < -slope_thr ? "DESCENDING" : "HORIZONTAL"
+
+bool near_lower = pos_chan <= 0.15
+bool near_upper = pos_chan >= 0.85
+
+float buf = brk_buf * width
+string breakout = close > upper_last + buf ? "ABOVE" : close < lower_last - buf ? "BELOW" : "NONE"
+int brk_bars = breakout == "ABOVE" ? f_breakout_bars(slope, up_int, lo_int, length, width, true) : breakout == "BELOW" ? f_breakout_bars(slope, up_int, lo_int, length, width, false) : 0
+
+float urgency = chan_ok ? f_urgency(kind, pos_chan, breakout, fit_r2, touches) : 0.0
+
+// ═══════════════════════════════════════════════════════════════
+// ████  CONFIRMATIONS  ████
+// ═══════════════════════════════════════════════════════════════
+
+// ── Candlestick patterns (raw) ──────────────────────────────────
+float c_body = math.abs(close - open)
+float c_rng  = high - low
+float c_up   = high - math.max(close, open)
+float c_dn   = math.min(close, open) - low
+bool c_doji   = c_rng > 0.0 and c_body <= c_rng * 0.1
+bool c_hammer = c_rng > 0.0 and c_dn >= c_body * 2.0 and c_up <= c_body and not c_doji
+bool c_star   = c_rng > 0.0 and c_up >= c_body * 2.0 and c_dn <= c_body and not c_doji
+bool c_bull_eng = close > open and close[1] < open[1] and close >= open[1] and open <= close[1]
+bool c_bear_eng = close < open and close[1] > open[1] and close <= open[1] and open >= close[1]
+
+// ── Context gating: only count reactions printed AT a rail ──────
+float r_tol = touch_tol * width
+bool tag_lower = chan_ok and low <= lower_last + r_tol and pos_chan <= 0.25
+bool tag_upper = chan_ok and high >= upper_last - r_tol and pos_chan >= 0.75
+
+bool react_bull = use_candles and tag_lower and (c_hammer or c_bull_eng)
+bool react_bear = use_candles and tag_upper and (c_star or c_bear_eng)
+bool react_doji = use_candles and (tag_lower or tag_upper) and c_doji
+
+// ── Breakout quality: volume confirm vs trap ────────────────────
+float vol_med = ta.percentile_linear_interpolation(volume, vol_lb, 50)
+bool vol_strong = not use_vol or (vol_med > 0.0 and volume > vol_mult * vol_med)
+bool brk_above = chan_ok and breakout == "ABOVE" and brk_bars == 1
+bool brk_below = chan_ok and breakout == "BELOW" and brk_bars == 1
+bool brk_confirmed = (brk_above or brk_below) and vol_strong
+bool brk_trap_vol  = (brk_above or brk_below) and not vol_strong
+
+// ── Fakeout: broke a rail last bar, closed back inside this bar ──
+bool fake_up = use_fake and chan_ok and breakout == "NONE" and breakout[1] == "ABOVE"
+bool fake_dn = use_fake and chan_ok and breakout == "NONE" and breakout[1] == "BELOW"
+
+// ── Multi-timeframe channel agreement (Pine v6 dynamic request) ──
+// Non-repainting: lookahead off. When a slot is blank we still call
+// request.security on the chart timeframe (both ternary branches evaluate in
+// Pine) but ignore the result, which keeps the call out of a conditional.
+bool htf1_on = str.length(htf1_tf) > 0
+bool htf2_on = str.length(htf2_tf) > 0
+string htf1_req = htf1_on ? htf1_tf : timeframe.period
+string htf2_req = htf2_on ? htf2_tf : timeframe.period
+string htf1_kind = request.security(syminfo.tickerid, htf1_req, f_htf_kind(length, atr_len, slope_thr), lookahead=barmerge.lookahead_off)
+string htf2_kind = request.security(syminfo.tickerid, htf2_req, f_htf_kind(length, atr_len, slope_thr), lookahead=barmerge.lookahead_off)
+
+bool dir_trend  = chan_ok and kind != "HORIZONTAL"
+bool htf1_agree = htf1_on and dir_trend and htf1_kind == kind
+bool htf2_agree = htf2_on and dir_trend and htf2_kind == kind
+int tf_total   = 1 + (htf1_on ? 1 : 0) + (htf2_on ? 1 : 0)
+int tf_aligned = (dir_trend ? 1 : 0) + (htf1_agree ? 1 : 0) + (htf2_agree ? 1 : 0)
+bool mtf_full  = tf_total >= 2 and tf_aligned == tf_total
+
+// ── Directional bias + reward/risk ──────────────────────────────
+bool desc_break_up = brk_above and kind == "DESCENDING"
+bool long_bias  = chan_ok and ((kind == "ASCENDING" and near_lower) or brk_above or desc_break_up or react_bull)
+bool short_bias = chan_ok and ((kind == "DESCENDING" and near_upper) or brk_below or react_bear)
+bool long_brk   = brk_above or desc_break_up
+bool short_brk  = brk_below
+
+// Breakout setups target a measured move (one channel height) and stop just
+// back inside the broken rail. In-channel setups target the opposite rail.
+float rr = na
+if long_bias and not short_bias
+    float stop = long_brk ? upper_last - rr_buf * atr : lower_last - rr_buf * atr
+    float tgt  = long_brk ? upper_last + width : upper_last
+    float risk = close - stop
+    float rew  = tgt - close
+    rr := risk > 0.0 ? rew / risk : na
+else if short_bias and not long_bias
+    float stop = short_brk ? lower_last + rr_buf * atr : upper_last + rr_buf * atr
+    float tgt  = short_brk ? lower_last - width : lower_last
+    float risk = stop - close
+    float rew  = close - tgt
+    rr := risk > 0.0 ? rew / risk : na
+
+// ── SETUP verdict (graded) + confidence tally /8 ────────────────
+string dir = (long_bias and not short_bias) ? "LONG" : (short_bias and not long_bias) ? "SHORT" : "WAIT"
+int conf = 0
+if dir != "WAIT"
+    if (dir == "LONG" and kind == "ASCENDING") or (dir == "SHORT" and kind == "DESCENDING") or desc_break_up
+        conf += 1
+    if (dir == "LONG" and react_bull) or (dir == "SHORT" and react_bear)
+        conf += 1
+    if brk_confirmed
+        conf += 1
+    if htf1_agree or htf2_agree
+        conf += 1
+    if mtf_full
+        conf += 1
+    if fit_r2 >= 0.5
+        conf += 1
+    if touches >= 3
+        conf += 1
+    if not na(rr) and rr >= 1.5
+        conf += 1
+bool strong = dir != "WAIT" and conf >= 5 and (na(rr) or rr >= 1.5)
+string verdict = dir == "WAIT" ? "WAIT" : (strong ? "STRONG " : "") + dir + (dir == "LONG" ? " ▲" : " ▼")
+
+// ── One-line reason (faithful to scoring.py reasons) ────────────
+string reason = not chan_ok ? "No channel" : kind == "HORIZONTAL" ? "No directional trend" : fit_r2 < 0.30 ? "Weak fit, low r2" : (kind == "DESCENDING" and breakout == "ABOVE") ? "Descending breakout above" : (kind == "ASCENDING" and near_lower and breakout == "NONE") ? "On lower rail: bounce or break" : (kind == "DESCENDING" and near_upper and breakout == "NONE") ? "Pinned to upper rail" : breakout != "NONE" ? ("Broke rail " + breakout) : ("Mid-channel " + kind + ", quiet")
+
+// ═══════════════════════════════════════════════════════════════
+// ████  DRAW RAILS  ████
+// ═══════════════════════════════════════════════════════════════
+color chan_col = kind == "ASCENDING" ? C_BULL : kind == "DESCENDING" ? C_BEAR : C_NEUTRAL
+
+var line up_line = na
+var line lo_line = na
+var line mid_line = na
+var linefill chan_fill = na
+var label brk_lbl = na
+
+if barstate.islast and chan_ok
+    int x1 = bar_index - (length - 1)
+    int x2 = bar_index
+    float up_y1 = up_int
+    float up_y2 = upper_last
+    float lo_y1 = lo_int
+    float lo_y2 = lower_last
+    float md_y1 = (up_int + lo_int) / 2.0
+    float md_y2 = center_last
+
+    if na(up_line)
+        up_line := line.new(x1, up_y1, x2, up_y2, color=chan_col, width=2, extend=extend.right)
+        lo_line := line.new(x1, lo_y1, x2, lo_y2, color=chan_col, width=2, extend=extend.right)
+        mid_line := line.new(x1, md_y1, x2, md_y2, color=color.new(chan_col, 40), width=1, style=line.style_dashed, extend=extend.right)
+        chan_fill := linefill.new(up_line, lo_line, color.new(chan_col, 90))
+    else
+        line.set_xy1(up_line, x1, up_y1)
+        line.set_xy2(up_line, x2, up_y2)
+        line.set_xy1(lo_line, x1, lo_y1)
+        line.set_xy2(lo_line, x2, lo_y2)
+        line.set_xy1(mid_line, x1, md_y1)
+        line.set_xy2(mid_line, x2, md_y2)
+        line.set_color(up_line, chan_col)
+        line.set_color(lo_line, chan_col)
+        linefill.set_color(chan_fill, color.new(chan_col, show_fill ? 90 : 100))
+
+    line.set_color(mid_line, show_mid ? color.new(chan_col, 40) : color.new(chan_col, 100))
+
+    // Breakout marker.
+    if show_brk and breakout != "NONE"
+        bool up = breakout == "ABOVE"
+        if na(brk_lbl)
+            brk_lbl := label.new(x2, up ? upper_last : lower_last, "", color=C_BREAK)
+        label.set_xy(brk_lbl, x2, up ? high : low)
+        string tag = brk_trap_vol ? "TRAP?" : "BREAK"
+        label.set_text(brk_lbl, tag + " " + (up ? "▲" : "▼") + " " + str.tostring(brk_bars) + "b")
+        label.set_style(brk_lbl, up ? label.style_label_down : label.style_label_up)
+        label.set_color(brk_lbl, brk_trap_vol ? C_TRAP : C_BREAK)
+        label.set_textcolor(brk_lbl, color.white)
+        label.set_size(brk_lbl, size.small)
+    else if not na(brk_lbl)
+        label.delete(brk_lbl)
+        brk_lbl := na
+
+// ── Measured-move target on a confirmed breakout ────────────────
+var float mm_level = na
+var int mm_dir = 0
+if brk_confirmed and brk_above
+    mm_dir := 1
+    mm_level := upper_last + width
+if brk_confirmed and brk_below
+    mm_dir := -1
+    mm_level := lower_last - width
+if mm_dir == 1 and breakout == "BELOW"
+    mm_dir := 0
+if mm_dir == -1 and breakout == "ABOVE"
+    mm_dir := 0
+
+var line mm_line = na
+var label mm_lbl = na
+if barstate.islast
+    if use_mm and mm_dir != 0 and not na(mm_level)
+        if na(mm_line)
+            mm_line := line.new(bar_index - 2, mm_level, bar_index, mm_level, color=C_CONF, width=1, style=line.style_dotted, extend=extend.right)
+            mm_lbl := label.new(bar_index, mm_level, "", style=label.style_label_left, color=color.new(C_CONF, 15), textcolor=#001014, size=size.small)
+        else
+            line.set_xy1(mm_line, bar_index - 2, mm_level)
+            line.set_xy2(mm_line, bar_index, mm_level)
+        label.set_xy(mm_lbl, bar_index, mm_level)
+        label.set_text(mm_lbl, "TGT " + str.tostring(mm_level, format.mintick))
+    else if not na(mm_line)
+        line.delete(mm_line)
+        mm_line := na
+        label.delete(mm_lbl)
+        mm_lbl := na
+
+// ── Candle-reaction + fakeout markers (per bar) ─────────────────
+plotshape(react_bull, "Bullish rail reaction", style=shape.triangleup, location=location.belowbar, color=C_BULL, size=size.tiny)
+plotshape(react_bear, "Bearish rail reaction", style=shape.triangledown, location=location.abovebar, color=C_BEAR, size=size.tiny)
+plotshape(react_doji, "Indecision at rail", style=shape.diamond, location=location.abovebar, color=C_WARN, size=size.tiny)
+plotshape(fake_up, "Fakeout above", style=shape.xcross, location=location.abovebar, color=C_TRAP, size=size.tiny)
+plotshape(fake_dn, "Fakeout below", style=shape.xcross, location=location.belowbar, color=C_TRAP, size=size.tiny)
+plotchar(brk_confirmed and brk_above, "Confirmed breakout ▲", char="✓", location=location.belowbar, color=C_CONF, size=size.tiny)
+plotchar(brk_confirmed and brk_below, "Confirmed breakout ▼", char="✓", location=location.abovebar, color=C_CONF, size=size.tiny)
+
+// ═══════════════════════════════════════════════════════════════
+// ████  MACHINE-READABLE OUTPUTS (data window)  ████
+// ═══════════════════════════════════════════════════════════════
+plot(chan_ok ? fit_r2 : na,     "Fit r2",        color=C_CONF, display=display.data_window)
+plot(chan_ok ? pos_chan : na,   "Position 0..1", color=C_BULL, display=display.data_window)
+plot(chan_ok ? width_atr : na,  "Width (ATR)",   color=C_WARN, display=display.data_window)
+plot(chan_ok ? touches : na,    "Touches",       color=C_TEXT, display=display.data_window)
+plot(chan_ok ? slope_pct : na,  "Slope %/bar",   color=C_NEUTRAL, display=display.data_window)
+plot(chan_ok ? urgency : na,    "Urgency 0-100", color=C_BREAK, display=display.data_window)
+plot(na(rr) ? na : rr,          "Reward/Risk",   color=C_CONF, display=display.data_window)
+
+// ═══════════════════════════════════════════════════════════════
+// ████  ALERTS  ████
+// ═══════════════════════════════════════════════════════════════
+bool asc_at_support = chan_ok and kind == "ASCENDING" and near_lower and breakout == "NONE"
+bool desc_at_resist = chan_ok and kind == "DESCENDING" and near_upper and breakout == "NONE"
+
+alertcondition(brk_above, "Channel breakout ▲", "Price broke ABOVE the channel")
+alertcondition(brk_below, "Channel breakout ▼", "Price broke BELOW the channel")
+alertcondition(brk_confirmed, "Confirmed breakout (volume)", "Channel breakout confirmed by volume")
+alertcondition(desc_break_up, "Descending channel breakout ▲", "Descending channel broke ABOVE. Reversal watch.")
+alertcondition(asc_at_support, "Ascending channel at support", "Ascending channel sitting on lower rail. Bounce or break.")
+alertcondition(desc_at_resist, "Descending channel at resistance", "Descending channel pinned to upper rail. Rejection or break.")
+alertcondition(react_bull, "Bullish reaction at lower rail", "Reversal candle rejecting the lower rail")
+alertcondition(react_bear, "Bearish reaction at upper rail", "Reversal candle rejecting the upper rail")
+alertcondition(fake_up or fake_dn, "Fakeout", "Price broke a rail then closed back inside")
+
+if barstate.isconfirmed and (brk_above or brk_below or react_bull or react_bear)
+    string sig = brk_confirmed ? "CONFIRMED BREAK" : (brk_above or brk_below) ? "BREAK (unconfirmed)" : react_bull ? "BULL REACTION" : "BEAR REACTION"
+    alert(syminfo.ticker + " " + timeframe.period + " | " + sig + " | " + verdict + " " + str.tostring(conf) + "/8 | " + kind + " | urg " + str.tostring(math.round(urgency)) + " | MTF " + str.tostring(tf_aligned) + "/" + str.tostring(tf_total) + " | RR " + (na(rr) ? "-" : str.tostring(math.round(rr * 10) / 10)), alert.freq_once_per_bar_close)
+
+// ═══════════════════════════════════════════════════════════════
+// ████  DASHBOARD  ████
+// ═══════════════════════════════════════════════════════════════
+var tbl_pos = switch dash_pos
+    "Top Right"    => position.top_right
+    "Top Left"     => position.top_left
+    "Bottom Right" => position.bottom_right
+    => position.bottom_left
+var tbl_size = switch dash_size
+    "Tiny"   => size.tiny
+    "Small"  => size.small
+    => size.normal
+var table tbl = na
+
+if barstate.isfirst and show_tbl
+    tbl := table.new(tbl_pos, 2, 16, bgcolor=C_BG, border_width=2, border_color=C_BORDER, frame_width=3, frame_color=C_BORDER)
+
+if barstate.islast and show_tbl
+    int row = 0
+    table.cell(tbl, 0, row, "GHOST CHANNELS", text_color=C_TEXT, text_size=tbl_size, text_halign=text.align_center, bgcolor=color.new(C_BORDER, 70))
+    table.merge_cells(tbl, 0, row, 1, row)
+    row += 1
+
+    if not chan_ok
+        table.cell(tbl, 0, row, "STATUS", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, bar_index < length - 1 ? "WARMING UP" : "NO FIT", text_color=C_WARN, text_size=tbl_size, text_halign=text.align_right)
+    else
+        // ── VERDICT (headline) ───────────────────────────────────
+        color v_col = verdict == "LONG ▲" ? C_BULL : verdict == "SHORT ▼" ? C_BEAR : color.new(C_TEXT, 40)
+        table.cell(tbl, 0, row, "SETUP", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, verdict + (verdict == "WAIT" ? "" : "  " + str.tostring(conf) + "/8"), text_color=v_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── URGENCY ──────────────────────────────────────────────
+        color u_col = urgency >= 75 ? C_BREAK : urgency >= 50 ? C_WARN : color.new(C_TEXT, 40)
+        table.cell(tbl, 0, row, "URGENCY", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, str.tostring(math.round(urgency)) + " / 100", text_color=u_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── KIND ─────────────────────────────────────────────────
+        color k_col = kind == "ASCENDING" ? C_BULL : kind == "DESCENDING" ? C_BEAR : C_NEUTRAL
+        table.cell(tbl, 0, row, "KIND", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, kind + (kind == "ASCENDING" ? " ▲" : kind == "DESCENDING" ? " ▼" : " ═"), text_color=k_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── POSITION ─────────────────────────────────────────────
+        float pos_pct = math.round(pos_chan * 100)
+        color pos_col = near_upper ? C_BEAR : near_lower ? C_BULL : color.new(C_TEXT, 30)
+        table.cell(tbl, 0, row, "POSITION", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, str.tostring(pos_pct) + "% " + (near_upper ? "(upper)" : near_lower ? "(lower)" : "(mid)"), text_color=pos_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── REWARD / RISK ────────────────────────────────────────
+        color rr_col = na(rr) ? color.new(C_TEXT, 60) : rr >= 1.5 ? C_CONF : C_TRAP
+        table.cell(tbl, 0, row, "R / R", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, na(rr) ? "-" : str.tostring(math.round(rr * 10) / 10) + " : 1", text_color=rr_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── FIT r² ───────────────────────────────────────────────
+        color r_col = fit_r2 >= 0.7 ? C_CONF : fit_r2 >= 0.4 ? C_WARN : C_BEAR
+        table.cell(tbl, 0, row, "FIT r²", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, str.tostring(math.round(fit_r2 * 100) / 100), text_color=r_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── TOUCHES + WIDTH ──────────────────────────────────────
+        color t_col = touches >= 4 ? C_CONF : touches >= 2 ? C_WARN : C_BEAR
+        table.cell(tbl, 0, row, "TOUCHES", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, str.tostring(touches) + "  ·  " + str.tostring(math.round(width_atr * 100) / 100) + " ATR", text_color=t_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── CANDLE REACTION ──────────────────────────────────────
+        string react_txt = react_bull ? "BULL ▲ rail" : react_bear ? "BEAR ▼ rail" : react_doji ? "DOJI at rail" : "-"
+        color react_col = react_bull ? C_BULL : react_bear ? C_BEAR : react_doji ? C_WARN : color.new(C_TEXT, 60)
+        table.cell(tbl, 0, row, "CANDLE", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, react_txt, text_color=react_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── BREAKOUT + VOLUME ────────────────────────────────────
+        string brk_txt = breakout == "NONE" ? "INSIDE" : breakout + (brk_trap_vol ? " TRAP?" : brk_confirmed ? " ✓vol" : "") + " (" + str.tostring(brk_bars) + "b)"
+        color b_col = breakout == "NONE" ? color.new(C_TEXT, 50) : brk_trap_vol ? C_TRAP : C_BREAK
+        table.cell(tbl, 0, row, "BREAKOUT", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, brk_txt, text_color=b_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── MULTI-TIMEFRAME confluence ───────────────────────────
+        string mtf_txt = tf_total < 2 ? "off" : str.tostring(tf_aligned) + "/" + str.tostring(tf_total) + " aligned"
+        color mtf_col = tf_total < 2 ? color.new(C_TEXT, 60) : tf_aligned == tf_total ? C_CONF : tf_aligned == 1 ? C_TRAP : C_WARN
+        table.cell(tbl, 0, row, "MTF", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, mtf_txt, text_color=mtf_col, text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── TF stack detail ──────────────────────────────────────
+        string tf_detail = "now " + f_arrow(kind) + (htf1_on ? "  " + htf1_tf + " " + f_arrow(htf1_kind) : "") + (htf2_on ? "  " + htf2_tf + " " + f_arrow(htf2_kind) : "")
+        table.cell(tbl, 0, row, "TFs", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, tf_detail, text_color=color.new(C_TEXT, 30), text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── REASON ───────────────────────────────────────────────
+        table.cell(tbl, 0, row, "WHY", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, reason, text_color=color.new(C_TEXT, 25), text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── METHOD ───────────────────────────────────────────────
+        table.cell(tbl, 0, row, "METHOD", text_color=color.new(C_TEXT, 40), text_size=tbl_size, text_halign=text.align_left)
+        table.cell(tbl, 1, row, fit_name + " · " + str.tostring(length) + "b", text_color=color.new(C_TEXT, 50), text_size=tbl_size, text_halign=text.align_right)
+        row += 1
+
+        // ── Compressed AI payload (OCR / screenshot parsing) ─────
+        string ai = syminfo.ticker + "|" + timeframe.period + "|" + verdict + " " + str.tostring(conf) + "/8|urg " + str.tostring(math.round(urgency)) + "|" + kind + "|r2 " + str.tostring(math.round(fit_r2 * 100) / 100) + "|pos " + str.tostring(pos_pct) + "%|RR " + (na(rr) ? "-" : str.tostring(math.round(rr * 10) / 10)) + "|tch " + str.tostring(touches) + "|" + breakout + (brk_confirmed ? "(vol)" : "") + "|MTF " + str.tostring(tf_aligned) + "/" + str.tostring(tf_total) + "|" + fit_name
+        table.cell(tbl, 0, row, ai, text_color=color.new(C_TEXT, 75), text_size=size.tiny, text_halign=text.align_center)
+        table.merge_cells(tbl, 0, row, 1, row)

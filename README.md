@@ -3,10 +3,10 @@
 
   # 🌌 The Alpha Skills Suite
 
-  **129 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
+  **133 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
 
   [![Stars](https://img.shields.io/github/stars/mphinance/alpha-skills?style=for-the-badge&color=00e5ff)](https://github.com/mphinance/alpha-skills/stargazers)
-  [![Skills](https://img.shields.io/badge/Agent_Skills-129-ff007f?style=for-the-badge)](#)
+  [![Skills](https://img.shields.io/badge/Agent_Skills-133-ff007f?style=for-the-badge)](#)
   [![Optimized](https://img.shields.io/badge/Optimized_For-Claude_%7C_Gemini-8a2be2?style=for-the-badge)](#)
   [![License](https://img.shields.io/badge/License-MIT-39ff14?style=for-the-badge)](#)
 
@@ -188,6 +188,8 @@ edge-hint-extractor -> edge-concept-synthesizer -> edge-strategy-designer
 | [portfolio-manager](skills/portfolio-manager/) | Connects to [Alpaca MCP](https://github.com/mphinance/awesome-broker-mcp/blob/main/brokers/alpaca.md) for allocation analysis, risk metrics, and rebalancing. | Alpaca MCP |
 | [broker-mcp-selector](skills/broker-mcp-selector/) | **The hands.** Picks a broker MCP server that can *execute* safely — backed by [awesome-broker-mcp](https://github.com/mphinance/awesome-broker-mcp). | - |
 | [trader-memory-core](skills/trader-memory-core/) | State machine tracking theses from idea to closed-trade MAE/MFE postmortem. | - |
+| [trader-lady](skills/trader-lady/) | Options-flow analyst persona: verdict, the why, the killer. Leads with the call, always states what invalidates it. | - |
+| [broker-upstream-check](skills/broker-upstream-check/) | Probes each broker in awesome-broker-mcp (llms.txt, openapi, MCP endpoints, repos) and diffs against a snapshot to catch upstream changes. | - |
 
 > **🖐️ From analysis to execution.** Every skill above decides *what* to trade. To actually place the order, [`broker-mcp-selector`](skills/broker-mcp-selector/) picks a broker whose MCP server can execute — read-only, draft-approval, or live — with paper-by-default, least-privilege defaults. It's backed by **[awesome-broker-mcp](https://github.com/mphinance/awesome-broker-mcp)**, a continuously re-verified directory of which brokers an AI agent can actually trade through, and how each behaves if the agent does something careless. The brain plans; that's the hands.
 
@@ -262,6 +264,8 @@ edge-hint-extractor -> edge-concept-synthesizer -> edge-strategy-designer
 | [hyperframes](skills/hyperframes/) | Programmable video compositions, audio-reactive visuals, kinetic typography. | - |
 | [image-poster](skills/image-poster/) | Editorial-style poster and key art generation via Flux/Midjourney. | - |
 | [audio-jingle](skills/audio-jingle/) | Voiceovers, jingles, and SFX via ElevenLabs/Suno/MiniMax. | - |
+| [audio-production](skills/audio-production/) | Transcribe, trim silence/fluff, denoise and master (-16 LUFS) stream and call recordings into one folder. | `OPENROUTER_API_KEY` (optional) |
+| [image-bakeoff](skills/image-bakeoff/) | Run N image models x M prompts, get a contact sheet with per-image cost and latency. | `OPENROUTER_API_KEY` |
 | [video-shortform](skills/video-shortform/) | 3-10 second clips: product reveals, motion teasers, ambient loops. | - |
 | [social-carousel](skills/social-carousel/) | Cinematic 3-card 1080x1080 social media carousels. | - |
 | [magazine-poster](skills/magazine-poster/) | Editorial newsprint poster with oversized serif headlines. | - |

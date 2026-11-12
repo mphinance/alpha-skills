@@ -24,3 +24,7 @@ When invoked via "Run Skill Warden" or "Audit my skills":
 1. Recursively read all `SKILL.md` files.
 2. Generate a `skill_audit_report.md` artifact detailing warnings, critical errors, and a list of deprecated skills.
 3. Await user confirmation before attempting auto-fixes or deletion of dead skills.
+
+## Deterministic scan
+
+`python3 skills/skill-warden/scripts/warden_scan.py [ROOT ...] [--json]` greps every SKILL.md and script for order verbs (`place_order`, `create_order`, `submit`, `--execute`), bypass flags (`--yes`, `confirm=true`, `--quiet`), `curl | sh`, `0.0.0.0`, raw `PRIVATE_KEY`, unpinned fetches, and whether a gate pattern (`isatty`, `input(`, `exit 10`, a token check) sits near an order verb. Output is candidate evidence for a human, never a verdict: a hit can be benign, and a clean scan proves nothing.

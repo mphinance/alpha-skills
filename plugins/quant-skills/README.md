@@ -6,7 +6,7 @@ This plugin equips Claude Code, Antigravity, and Gemini with an institutional-gr
 
 ## Key Capabilities
 
-- **Broker Execution**: `webull-openapi` (official Webull SDK CLI integration), `broker-mcp-selector`, `ghost-auto-trader`
+- **Broker Execution**: `webull-openapi` (official Webull SDK CLI integration), `broker-mcp-selector`, `ghost-auto-trader`, `order-lifecycle-safety`
 - **Stock Screening**: `canslim-screener`, `vcp-screener`, `pead-screener`, `dividend-growth-pullback-screener`, `batch-scanner`, `finviz-screener`
 - **Technical Analysis & Pine Script**: `technical-analyst`, `breadth-chart-analyst`, `uptrend-analyzer`, `mph-pine`, `pine-to-python`
 - **Macro & Market Regimes**: `macro-regime-detector`, `market-environment-analysis`, `market-top-detector`, `ftd-detector`, `us-market-bubble-detector`

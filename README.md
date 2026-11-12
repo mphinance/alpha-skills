@@ -3,10 +3,10 @@
 
   # 🌌 The Alpha Skills Suite
 
-  **133 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
+  **143 Elite AI Agent Skills for Quant Trading, Market Intelligence, and Creative Production**
 
   [![Stars](https://img.shields.io/github/stars/mphinance/alpha-skills?style=for-the-badge&color=00e5ff)](https://github.com/mphinance/alpha-skills/stargazers)
-  [![Skills](https://img.shields.io/badge/Agent_Skills-133-ff007f?style=for-the-badge)](#)
+  [![Skills](https://img.shields.io/badge/Agent_Skills-143-ff007f?style=for-the-badge)](#)
   [![Optimized](https://img.shields.io/badge/Optimized_For-Claude_%7C_Gemini-8a2be2?style=for-the-badge)](#)
   [![License](https://img.shields.io/badge/License-MIT-39ff14?style=for-the-badge)](#)
 
@@ -51,7 +51,7 @@ AI agents like Claude Code and Gemini are only as good as the context you provid
 
 By dropping these `skills/` into your agent's workspace, you inject decades of domain expertise, algorithmic rigor, and aesthetic taste directly into their runtime. You aren't just getting scripts. You are getting autonomous agents capable of identifying market regimes, rewriting PineScript to Python, running full design critiques, and generating Substack-ready financial reports.
 
-> **On Modularity:** A "Full Tower" audit was performed across all 113 directories. Every single skill is structurally unique. Even seemingly overlapping skills (like Breadth vs. Uptrend analyzers) are intentionally decoupled, serving as independent, uncorrelated inputs for the downstream Druckenmiller Strategy Synthesizer.
+> **On counts and modularity:** the number in the badge and the headline is the count of distinct skills, and it is generated, not typed. Run `python3 scripts/count_skills.py` (add `--check` to fail CI when the badge drifts). The suite holds **143 distinct skills**: 63 ship in the `quant-skills` plugin, 28 in `mph-kit` (3 are shared), and 136 live in the top-level `skills/` library, of which 55 are not attached to any plugin yet. Even seemingly overlapping skills (like Breadth vs. Uptrend analyzers) are intentionally decoupled, serving as independent, uncorrelated inputs for the downstream Druckenmiller Strategy Synthesizer.
 
 ---
 

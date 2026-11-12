@@ -22,3 +22,6 @@ jobs:
       - name: Validate Skill Frontmatter & Schema
         run: |
           python scripts/validate_skills.py
+      - name: Check skill count matches the README badge
+        run: |
+          python scripts/count_skills.py --check

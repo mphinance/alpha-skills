@@ -21,6 +21,7 @@ Refresh via the `mph-voice-refresh` skill. Anything in here is fair game when wr
 - Lowercase sentence starts when conversational
 - Mid-sentence self-corrections ("wait", "I meant", "Oh, you couldn't")
 - `Ugh.` — single-word reaction line, full stop
+- ` - ` (spaced hyphen) — what he uses mid-sentence where prose would want a dash; never an actual em dash
 
 ## Idioms & tics (confirmed from transcripts)
 
@@ -32,6 +33,7 @@ Refresh via the `mph-voice-refresh` skill. Anything in here is fair game when wr
 - `Let's get er done` — casual closer / kickoff
 - `it keeps yelling at me` — anthropomorphizing tools / code
 - `I had a similar one in...` — anchoring new ideas to past experience
+- `nvm` — quick self-correction or walk-back, often after a false alarm ("I don't see any ... nvm, sorry")
 
 ## Sentence rhythms
 
@@ -39,6 +41,7 @@ Refresh via the `mph-voice-refresh` skill. Anything in here is fair game when wr
 - **Question + sigh:** "All these commits/changes and we haven't updated the readme? lol Screenshots?"
 - **Long thought, single breath:** sentences chain with commas and periods without em dashes; if the thought breaks, use `..` not a dash
 - **Self-correction mid-line:** "Oh, you couldn't. Here's my secret draft link... not working?"
+- **Blunt correction:** states the miss flatly, no cushion. "And for the record... no that wasn't even close."
 
 ## Topic-specific phrasing
 
@@ -46,6 +49,8 @@ Refresh via the `mph-voice-refresh` skill. Anything in here is fair game when wr
 - **Self-deprecation:** "admitting losses is the content" — perfection is boring.
 - **Anti-establishment:** never write like a Morgan Stanley research note.
 - **Tool exasperation:** "it keeps yelling at me", "stop being repeated", "There's zero reason you shouldn't be able to..."
+- **Helping people is the point:** he frames the purpose of the work by who it helps. "Anywhere it would help people, really." Free, open, given away.
+- **Problem-solving drive:** enjoys solving problems, and especially several at once. The move he likes best is the one that clears multiple things in a single stroke.
 
 ## Long-form examples (full quotes)
 
@@ -57,6 +62,7 @@ Verbatim user lines worth treating as voice anchors. Mimic the rhythm, not the c
 4. "And one more you're going to write now.... I had a similar one in Antigravity. My mph-substack-writer, or VOICE.md, or whatever... can we write something that..."
 5. "Any of these look good to install here based on our work together? These are some.. things, I've been working on, lol"
 6. "Some of those closes need to go and stop being repeated."
+7. "Then one thing neither of us are good at... I don't need the analytics to know barely anyone is using it :( Where/how do I get the word out. I mean, it's free....."
 
 ## Published voice — Substack patterns
 
@@ -109,8 +115,18 @@ Phrases Claude has reached for repeatedly across 3+ sessions. These have become 
 - `let me set it up`
 - `let me set it up properly`
 - `let me write the plan`
+- `let me look at the`
+- `let me start with the`
+- `let me see what the`
+- `here's the truth` — flagged 2026-05-25 as obviously AI; pivot via contradiction-filter or flat declarative instead
+- `here's the thing` — same family, same problem
+- `here's what's actually happening` — same family
+- `look,` / `listen,` (as standalone pivots) — corporate-podcast cadence
+- `let me be clear` / `let me be specific as a pivot opener` — overused
+- `the bottom line is` — corporate
+- `at the end of the day` — corporate
 
 ---
 
-_Last refreshed: 2026-05-18 (60-day chat window, 5 sessions + 8 most-recent Substack posts)_
+_Last refreshed: 2026-05-21 (chat voice: 30-day window, 12 sessions). Substack patterns last mined 2026-05-18._
 _Sources: `~/.claude/projects/*/*.jsonl` via `scripts/mine_voice.py`; `mphinance.substack.com/feed` via `scripts/mine_feed.py`_

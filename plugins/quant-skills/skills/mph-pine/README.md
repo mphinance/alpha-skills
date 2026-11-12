@@ -20,7 +20,8 @@ template (synthwave palette, grouped inputs, dashboard table plus a compressed
 AI-readable payload row), reusable math (hand-rolled linreg with r2, residual
 std, measured-move and reward/risk geometry, volume-confirm median, context-gated
 candlestick patterns), and the hard rules (no em dashes anywhere, including code
-comments, and clipboard handoff to TradingView since there is no offline compiler).
+comments, and a compile check before handoff via
+`~/projects/pinewright/scripts/pinecheck.sh`).
 
 ## Worked example
 
@@ -38,6 +39,6 @@ confidence tally. Drop it into TradingView's Pine Editor to see the full pattern
 Say "write a pine indicator for X" or "port this signal to Pine", or invoke
 `/mph-pine`. The skill grounds on current v6 docs, ports any named source engine
 faithfully first, builds in house style, runs the landmine and em-dash checks,
-then hands the finished script to you on the clipboard for a paste into
-TradingView. There is no offline Pine compiler, so that paste is the verification
-step.
+compiles it with `pinecheck.sh` and fixes what the compiler
+reports, then hands the finished script to you on the clipboard for a paste into
+TradingView. The paste is the visual check; compilation is already proven.

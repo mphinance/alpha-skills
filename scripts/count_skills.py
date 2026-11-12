@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""Single source of truth for the Alpha Skills Suite counts.
+"""Single source of truth for the Alpha Skills Suite counts and copy drift.
 
-Counts are computed from the tree, never hand-written into the README. Run with
---check to fail (exit 1) when the README badge disagrees with reality, so the
-number can never drift again.
+Counts and drift are computed from the tree, never hand-written into the README.
+Run with --check to fail (exit 1) when the README badge disagrees with reality OR
+when any skill that exists in more than one location has forked, so neither can
+drift again.
 
 Locations:
-  skills/                     the top-level library
+  skills/                     the top-level library (source of truth)
   plugins/<plugin>/skills/    what a `/plugin install` actually delivers
 
-Reports: per-location counts, distinct names, cross-location duplicates,
-drifted duplicates (same name, different SKILL.md), and skills that sit in
-skills/ but are reachable by no plugin install.
+A skill's *source* is every file under its directory except generated/run output
+(__pycache__, *.pyc, runs/, history/, reports/, proposals/, .cache, node_modules,
+venvs). Generated output is excluded so the check flags real forks only.
 """
 import argparse
 import hashlib
@@ -22,23 +23,45 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# path segments that are generated output, not skill source
+GENERATED_DIRS = {"__pycache__", "runs", "history", "reports", "proposals",
+                  ".cache", "node_modules", ".venv", "venv"}
+GENERATED_SUFFIXES = (".pyc", ".pyo")
+
 
 def collect(location):
-    """name -> SKILL.md path, for every skill dir under location."""
+    """name -> skill directory, for every skill dir (a dir holding SKILL.md)."""
     out = {}
     base = os.path.join(ROOT, location)
     if not os.path.isdir(base):
         return out
     for entry in sorted(os.listdir(base)):
-        skill = os.path.join(base, entry, "SKILL.md")
-        if os.path.isfile(skill):
-            out[entry] = skill
+        d = os.path.join(base, entry)
+        if os.path.isfile(os.path.join(d, "SKILL.md")):
+            out[entry] = d
     return out
 
 
-def sha(path):
-    with open(path, "rb") as fh:
-        return hashlib.sha256(fh.read()).hexdigest()
+def source_files(d):
+    """Relative paths of a skill's source files (generated output excluded)."""
+    rels = []
+    for root, dirs, files in os.walk(d):
+        dirs[:] = [x for x in dirs if x not in GENERATED_DIRS]
+        for f in files:
+            if f.endswith(GENERATED_SUFFIXES):
+                continue
+            rels.append(os.path.relpath(os.path.join(root, f), d))
+    return sorted(rels)
+
+
+def source_hash(d):
+    h = hashlib.sha256()
+    for rel in source_files(d):
+        h.update(rel.encode())
+        h.update(b"\0")
+        with open(os.path.join(d, rel), "rb") as fh:
+            h.update(hashlib.sha256(fh.read()).digest())
+    return h.hexdigest()
 
 
 def plugin_dirs():
@@ -69,17 +92,17 @@ def survey():
         if len(where) > 1:
             dupes[name] = where
 
-    # drifted: same name, different bytes between skills/ and a plugin
+    # drifted: same name, different source bytes across locations
     drifted = []
     for name, where in sorted(dupes.items()):
         hashes = {}
         if name in lib:
-            hashes["skills"] = sha(lib[name])
+            hashes["skills"] = source_hash(lib[name])
         for p, skills in plugins.items():
             if name in skills:
-                hashes[p] = sha(skills[name])
+                hashes[p] = source_hash(skills[name])
         if len(set(hashes.values())) > 1:
-            drifted.append({"name": name, "hashes": hashes})
+            drifted.append({"name": name, "locations": hashes})
 
     # reachable by any plugin install
     reachable = set()
@@ -113,7 +136,8 @@ def readme_badge():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true", help="exit 1 if README disagrees or any duplicate has drifted")
+    ap.add_argument("--check", action="store_true",
+                    help="exit 1 on a README badge mismatch or any forked copy")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     args = ap.parse_args()
 
@@ -130,21 +154,23 @@ def main():
         print(f"names in >1 location       : {s['duplicate_count']}")
         print(f"DRIFTED duplicates         : {s['drifted_count']}")
         for d in s["drifted"]:
-            print(f"    - {d['name']}: " + ", ".join(sorted(d["hashes"])))
+            print(f"    - {d['name']}: " + ", ".join(sorted(d["locations"])))
 
+    rc = 0
     badge = readme_badge()
     if badge is not None:
         print(f"README badge               : {badge}")
         if badge != s["distinct"]:
-            msg = (f"README badge says {badge}, tree has {s['distinct']} distinct skills")
-            print(("FAIL: " if args.check else "WARN: ") + msg)
+            print(f"{'FAIL' if args.check else 'WARN'}: README badge says {badge}, "
+                  f"tree has {s['distinct']} distinct skills")
             if args.check:
-                return 1
-    if args.check and s["drifted_count"] > 0:
-        names = ", ".join(d["name"] for d in s["drifted"])
-        print(f"FAIL: {s['drifted_count']} drifted duplicate(s): {names}")
-        return 1
-    return 0
+                rc = 1
+    if s["drifted_count"]:
+        print(f"{'FAIL' if args.check else 'WARN'}: {s['drifted_count']} skill(s) forked "
+              f"between locations; plugin copies must match skills/")
+        if args.check:
+            rc = 1
+    return rc
 
 
 if __name__ == "__main__":

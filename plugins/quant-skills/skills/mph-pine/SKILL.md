@@ -18,7 +18,14 @@ Use when the user asks to build, port, or extend a TradingView indicator or stra
 3. **Scaffold in house style.** Header comment block, palette consts, grouped inputs, calculations, draw, plots, alerts, dashboard. See the templates below.
 4. **Run the v6 landmine checklist** (below) against the finished file.
 5. **Scan for em dashes.** Search the file for U+2014 and U+2013, including code comments and string literals. Replace with a hyphen or comma. This is the single most common house-rule miss in generated code.
-6. **Hand off for compile.** There is no offline Pine compiler. Load the finished script onto the user's clipboard and tell them to paste it into TradingView's Pine Editor, Save, Add to chart, and report any red error. Fix reported errors and reload the clipboard.
+6. **Compile it.** There IS a compiler, reachable without a TradingView account:
+   ```bash
+   ~/projects/pinewright/scripts/pinecheck.sh <file>.pine
+   ```
+   Exit 0 clean, 1 errors (line, column, message), 2 unreachable. Loop until
+   clean. Treat `CW10003`/`CW10004` "should be called on each calculation"
+   warnings as errors - they mean the script repaints. Only then hand the script
+   to the clipboard for a paste into TradingView.
 7. **Save and offer to ship.** Write to `docs/pine/<name>.pine` in the relevant repo. Offer `/ship`. Never commit without being asked.
 
 ## v6 landmine checklist
@@ -33,7 +40,7 @@ These are the v6 breaking changes and gotchas that bite when porting from v5 or 
 - **`input.timeframe("")` off-slot trick.** An empty timeframe means the chart timeframe. For an optional higher-TF confirm, never gate `request.security` behind a ternary on the empty string (Pine evaluates both branches). Instead call `request.security` on a fallback (`htf_on ? htf_tf : timeframe.period`) and ignore the result when off.
 - **`plotchar` / `plotshape` args must be const.** `char`, `text`, and `location` cannot be series. Split a direction-dependent marker into two calls with fixed `location.belowbar` / `location.abovebar`.
 - **User functions must be global.** Declare every `f_*()` at top level, never inside an `if` block or a local scope.
-- **Medians.** Pine has no `ta.median`. Use `ta.percentile_linear_interpolation(src, len, 50)`.
+- **Medians.** `ta.median(src, len)` exists in v6 (verified against the compiler). The old workaround `ta.percentile_linear_interpolation(src, len, 50)` is still valid but no longer necessary.
 - **Pine gives you no slope or r2 directly.** Hand-roll least squares (snippet below).
 - Set generous `max_bars_back`, `max_lines_count`, `max_labels_count` on `indicator()` when drawing persistent objects or looping over history.
 - Heavy per-bar loops (pivot scans, multi-pass fits) can trip the execution-time limit on long intraday histories. Keep lookbacks modest and note the tradeoff.
@@ -156,11 +163,11 @@ bool react_bull = tag_lower and (hammer or bull_eng)   // tag_lower = price reac
 - No markdown tables in any prose meant for Substack. This rule is about deliverables, not this skill file.
 - Faithful before fancy. If porting an engine, match its field names and constants exactly first. Label every addition as new.
 - Never invent indicator behavior the user did not ask for. Propose, then build.
-- There is no offline Pine compiler. Always verify by clipboard handoff to TradingView, never claim it compiles from inspection alone.
+- Never claim a script compiles from inspection. Run `pinecheck.sh` and quote the result. TradingView's Pine Editor stays the final visual check, but compilation is now verifiable before handoff.
 - Write the script to `docs/pine/<name>.pine`. Surface the absolute path. Offer `/ship`, never auto-commit.
 
 ## Out of scope
 
-- Auto-compiling or auto-deploying scripts. TradingView is the only compiler and the user drives it.
+- Auto-deploying scripts to a chart. `pinecheck.sh` compiles, but adding to a chart and publishing is the user's call.
 - Placing trades or wiring live orders. Indicators are advisory.
 - Anything not described above. If the user wants something adjacent, ask before extending the skill.

@@ -113,7 +113,7 @@ def readme_badge():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true", help="exit 1 if README disagrees")
+    ap.add_argument("--check", action="store_true", help="exit 1 if README disagrees or any duplicate has drifted")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     args = ap.parse_args()
 
@@ -140,6 +140,10 @@ def main():
             print(("FAIL: " if args.check else "WARN: ") + msg)
             if args.check:
                 return 1
+    if args.check and s["drifted_count"] > 0:
+        names = ", ".join(d["name"] for d in s["drifted"])
+        print(f"FAIL: {s['drifted_count']} drifted duplicate(s): {names}")
+        return 1
     return 0
 
 
